@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  
+<head>
+    <meta charset="UTF-8">
+    <title>Профіль</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Особистий кабінет</h1>
+    <p>Ім’я: <strong>{{ username }}</strong></p>
+    <p>Email: <strong>{{ email }}</strong></p>
+    <p>Дата народження: <strong>{{ birthdate or 'Не вказано' }}</strong></p>
+
+    <form method="post">
+        <h3>Оновити дані</h3>
+        <label>Нова дата народження:</label><br>
+        <input type="date" name="birthdate" value="{{ birthdate }}"><br><br>
+
+        <h3>Зміна пароля</h3>
+        <label>Старий пароль:</label><br>
+        <input type="password" name="old_password"><br><br>
+
+        <label>Новий пароль:</label><br>
+        <input type="password" name="new_password"><br><br>
+
+        <label>Підтвердіть новий пароль:</label><br>
+        <input type="password" name="confirm_password"><br><br>
+
+        <button type="submit">Зберегти зміни</button>
+    </form>
+
+    <br>
+    <a href="/"><button>← Назад на головну</button></a>
+    <a href="/logout"><button>Вийти</button></a>
+
+    <h2>Ваші заявки</h2>
+    {% if requests %}
+        <table>
+            <tr>
+                <th>Опис</th>
+                <th>Складність</th>
+                <th>Термін</th>
+                <th>Вартість</th>
+                <th>Дата дзвінка</th>
+            </tr>
+            {% for r in requests %}
+            <tr>
+                <td>{{ r[0] }}</td>
+                <td>{{ r[1] }}</td>
+                <td>{{ r[2] }}</td>
+                <td>${{ r[3] }}</td>
+                <td>{{ r[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>У вас ще немає створених заявок.</p>
+    {% endif %}
+</body>
+</html>

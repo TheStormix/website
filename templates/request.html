@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Замовлення продукту</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        function showOptions() {
+            const type = document.getElementById("product_type").value;
+
+            document.getElementById("website_options").style.display = (type === "website") ? "block" : "none";
+            document.getElementById("app_options").style.display = (type === "app") ? "block" : "none";
+            document.getElementById("bot_options").style.display = (type === "bot") ? "block" : "none";
+
+            calculateComplexity();
+        }
+
+        function calculateComplexity() {
+            let score = 0;
+            const type = document.getElementById("product_type").value;
+
+            if (type === "website") {
+                if (document.getElementById("pages").value === "3+") score += 2;
+                if (document.getElementById("admin_panel").checked) score += 2;
+                if (document.getElementById("auth").checked) score += 1;
+            }
+
+            if (type === "app") {
+                if (document.getElementById("platform").value === "both") score += 2;
+                if (document.getElementById("login").checked) score += 1;
+                if (document.getElementById("user_profile").checked) score += 2;
+            }
+
+            if (type === "bot") {
+                if (document.getElementById("bot_commands").value === "many") score += 2;
+                if (document.getElementById("bot_payments").checked) score += 2;
+                if (document.getElementById("bot_database").checked) score += 1;
+            }
+
+            let complexity = "low";
+            if (score >= 3 && score < 5) complexity = "medium";
+            else if (score >= 5) complexity = "high";
+
+            document.getElementById("complexity").value = complexity;
+        }
+    </script>
+</head>
+<body>
+    <h1>Залишити заявку</h1>
+
+    <!-- 🔹 Вибір типу користувача -->
+    <div style="margin-bottom: 20px;">
+        <p><strong>Ви новий користувач чи вже маєте акаунт?</strong></p>
+        <a href="/request"><button type="button">Новий користувач (без реєстрації)</button></a>
+        <a href="/user-login"><button type="button">Уже маю акаунт</button></a>
+    </div>
+
+    <form method="post" oninput="calculateComplexity()">
+        <label>Ім’я:</label><br>
+        <input type="text" name="name" required><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br>
+
+        <label>Тип продукту:</label><br>
+        <select name="product_type" id="product_type" onchange="showOptions()" required>
+            <option value="">-- Оберіть --</option>
+            <option value="website">Веб-сайт</option>
+            <option value="app">Мобільний додаток</option>
+            <option value="bot">Telegram-бот</option>
+        </select><br><br>
+
+        <div id="website_options" style="display:none;">
+            <label>Кількість сторінок:</label><br>
+            <select id="pages" name="pages">
+                <option value="1-2">1-2</option>
+                <option value="3+">3+</option>
+            </select><br>
+
+            <div class="checkbox-btn">
+                <input type="checkbox" id="admin_panel" name="admin_panel">
+                <label for="admin_panel">Адмінпанель</label>
+            </div>
+            <div class="checkbox-btn">
+                <input type="checkbox" id="auth" name="auth">
+                <label for="auth">Авторизація</label>
+            </div>
+        </div>
+
+        <div id="app_options" style="display:none;">
+            <label>Платформа:</label><br>
+            <select id="platform" name="platform">
+                <option value="android">Android</option>
+                <option value="ios">iOS</option>
+                <option value="both">Android + iOS</option>
+            </select><br>
+
+            <div class="checkbox-btn">
+                <input type="checkbox" id="login" name="login">
+                <label for="login">Вхід у систему</label>
+            </div>
+            <div class="checkbox-btn">
+                <input type="checkbox" id="user_profile" name="user_profile">
+                <label for="user_profile">Профіль користувача</label>
+            </div>
+        </div>
+
+        <div id="bot_options" style="display:none;">
+            <label>Кількість команд:</label><br>
+            <select id="bot_commands" name="bot_commands">
+                <option value="few">1-3</option>
+                <option value="many">4+</option>
+            </select><br>
+
+            <div class="checkbox-btn">
+                <input type="checkbox" id="bot_database" name="bot_database">
+                <label for="bot_database">Інтеграція з базою даних</label>
+            </div>
+            <div class="checkbox-btn">
+                <input type="checkbox" id="bot_payments" name="bot_payments">
+                <label for="bot_payments">Прийом платежів</label>
+            </div>
+        </div><br>
+
+        <input type="hidden" name="complexity" id="complexity" value="low">
+        <label>Опис проєкту:</label><br>
+        <textarea name="description" required></textarea><br>
+
+        <button type="submit">Надіслати</button>
+    </form>
+</body>
+</html>

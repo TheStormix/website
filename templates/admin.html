@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Адмін-панель</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <h2>Адмін-панель</h2>
+    <p><a href="/">← Назад на головну</a></p>
+    <a href="/admin-logout"><button>Вийти</button></a>
+    {% if requests %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ім’я</th>
+                <th>Email</th>
+                <th>Опис</th>
+                <th>Складність</th>
+                <th>Термін</th>
+                <th>Вартість</th>
+                <th>Дата дзвінка</th>
+                <th>Дія</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in requests %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>${{ row[6] }}</td>
+                <td>{{ row[7] }}</td>
+                <td>
+                    <form action="/delete/{{ row[0] }}" method="post" onsubmit="return confirm('Видалити це замовлення?');">
+                        <button type="submit">Видалити</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Заявок поки що немає.</p>
+    {% endif %}
+</body>
+</html>

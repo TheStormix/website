@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Підтвердження</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="confirmation">
+        <h2>Дякуємо, {{ name }}!</h2>
+        <p>Складність проєкту: {{ complexity }}</p>
+        <p>Приблизний час виконання: {{ estimated_time }}</p>
+        <p>Оцінка вартості: ${{ estimated_cost }}</p>
+        <p>Очікуйте дзвінка від представника {{ meeting_date }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Головна сторінка</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="profile-menu">
+        <img src="{{ url_for('static', filename='img/user-icon.jpg') }}" alt="Profile" class="profile-icon" onclick="toggleMenu()">
+        <div id="dropdown" class="dropdown-menu">
+            {% if session.get('user_id') %}
+                <a href="/profile">👤 Мій профіль</a>
+                <a href="/logout">🚪 Вийти</a>
+            {% else %}
+                <a href="/user-login">🔐 Вхід</a>
+                <a href="/register">📝 Реєстрація</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <h1>Ласкаво просимо в ІТ-компанію</h1>
+    <p>Ми допоможемо вам реалізувати ваш проєкт!</p>
+    <a href="/request"><button>Залишити заявку</button></a>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("dropdown").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-icon')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
