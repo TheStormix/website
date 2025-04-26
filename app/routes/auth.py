@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, flash
+from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
@@ -19,14 +19,17 @@ def register():
             conn.commit()
         except sqlite3.IntegrityError:
             conn.close()
-            flash("Користувач з таким email вже існує")
-            return redirect('/register')
+            flash("Користувач з таким email вже існує", "error")
+            return redirect(url_for('auth.register'))
         conn.close()
-        return redirect('/user-login')
+        return redirect(url_for('auth.user_login'))
+    
     return render_template('register.html')
 
 @bp.route('/user-login', methods=['GET', 'POST'])
 def user_login():
+    next_page = request.args.get('next') if request.method == 'GET' else request.form.get('next')
+
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -40,14 +43,18 @@ def user_login():
         if user and check_password_hash(user[2], password):
             session['user_id'] = user[0]
             session['username'] = user[1]
-            return redirect('/profile')
+
+            if next_page:
+                return redirect(next_page)   # <<< залишаємо так
+            else:
+                return redirect(url_for('user.profile'))
         else:
-            flash("Невірний email або пароль")
-            return redirect('/user-login')
-    return render_template('user_login.html')
+            flash("Невірний email або пароль", "error")
+            return redirect(url_for('auth.user_login', next=next_page))
+
+    return render_template('user_login.html', next_page=next_page)
 
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect('/')
-
+    return redirect(url_for('main.home'))

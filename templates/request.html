@@ -2,10 +2,22 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Замовлення продукту</title>
+    <title>Залишити заявку</title>
+    <a href="{{ url_for('main.home') }}">
+        <button type="button" style="margin-bottom: 20px;">⬅️ На головну</button>
+    </a>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
     <script>
+        function showForm(type) {
+            document.getElementById('user_choice').style.display = 'none';
+
+            if (type === 'new') {
+                document.getElementById('new_user_form').style.display = 'block';
+            } else if (type === 'existing') {
+                document.getElementById('login_form').style.display = 'block';
+            }
+        }
+
         function showOptions() {
             const type = document.getElementById("product_type").value;
 
@@ -47,15 +59,18 @@
     </script>
 </head>
 <body>
-    <h1>Залишити заявку</h1>
 
-    <!-- 🔹 Вибір типу користувача -->
-    <div style="margin-bottom: 20px;">
-        <p><strong>Ви новий користувач чи вже маєте акаунт?</strong></p>
-        <a href="/request"><button type="button">Новий користувач (без реєстрації)</button></a>
-        <a href="/user-login"><button type="button">Уже маю акаунт</button></a>
-    </div>
+<h1>Залишити заявку</h1>
 
+<!-- Питання чи форма -->
+<div id="user_choice" {% if session.get('user_id') %}style="display:none;"{% endif %}>
+    <p><b>Ви новий користувач чи вже маєте акаунт?</b></p>
+    <button onclick="showForm('new')">Новий користувач (без реєстрації)</button>
+    <button onclick="showForm('existing')">Вже маю акаунт</button>
+</div>
+
+<!-- Форма для нових користувачів -->
+<div id="new_user_form" {% if session.get('user_id') %}style="display:block;"{% else %}style="display:none;"{% endif %}>
     <form method="post" oninput="calculateComplexity()">
         <label>Ім’я:</label><br>
         <input type="text" name="name" required><br>
@@ -129,5 +144,16 @@
 
         <button type="submit">Надіслати</button>
     </form>
+</div>
+
+<!-- Форма логіну для існуючих користувачів -->
+<div id="login_form" style="display:none;">
+    <form method="get" action="{{ url_for('auth.user_login') }}">
+        <input type="hidden" name="next" value="{{ url_for('main.request_form') }}">
+        <p>Щоб залишити заявку, будь ласка, увійдіть у свій акаунт.</p>
+        <button type="submit">Перейти до входу</button>
+    </form>
+</div>
+
 </body>
 </html>
