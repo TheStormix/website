@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="uk">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul class="flash-messages">
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
-  
 <head>
     <meta charset="UTF-8">
     <title>Профіль</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
     <h1>Особистий кабінет</h1>
     <p>Ім’я: <strong>{{ username }}</strong></p>
     <p>Email: <strong>{{ email }}</strong></p>
@@ -40,19 +40,23 @@
     </form>
 
     <br>
-    <a href="/"><button>← Назад на головну</button></a>
-    <a href="/logout"><button>Вийти</button></a>
+    <a href="{{ url_for('main.home') }}"><button>← Назад на головну</button></a>
+    <a href="{{ url_for('auth.logout') }}"><button>Вийти</button></a>
 
     <h2>Ваші заявки</h2>
     {% if requests %}
         <table>
-            <tr>
-                <th>Опис</th>
-                <th>Складність</th>
-                <th>Термін</th>
-                <th>Вартість</th>
-                <th>Дата дзвінка</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Опис</th>
+                    <th>Складність</th>
+                    <th>Термін</th>
+                    <th>Вартість</th>
+                    <th>Дата дзвінка</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for r in requests %}
             <tr>
                 <td>{{ r[0] }}</td>
@@ -60,8 +64,10 @@
                 <td>{{ r[2] }}</td>
                 <td>${{ r[3] }}</td>
                 <td>{{ r[4] }}</td>
+                <td>{{ r[5] }}</td>
             </tr>
             {% endfor %}
+            </tbody>
         </table>
     {% else %}
         <p>У вас ще немає створених заявок.</p>

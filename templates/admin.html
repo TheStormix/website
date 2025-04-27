@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Адмін-панель</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 <body>
     <h2>Адмін-панель</h2>
-    <p><a href="/">← Назад на головну</a></p>
-    <a href="/admin-logout"><button>Вийти</button></a>
+    <p><a href="{{ url_for('main.home') }}">← Назад на головну</a></p>
+    <a href="{{ url_for('admin.admin_logout') }}"><button>Вийти</button></a>
+
     {% if requests %}
     <table>
         <thead>
@@ -22,6 +22,7 @@
                 <th>Термін</th>
                 <th>Вартість</th>
                 <th>Дата дзвінка</th>
+                <th>Статус</th>
                 <th>Дія</th>
             </tr>
         </thead>
@@ -36,8 +37,19 @@
                 <td>{{ row[5] }}</td>
                 <td>${{ row[6] }}</td>
                 <td>{{ row[7] }}</td>
+                <!-- Статус із можливістю вибору -->
                 <td>
-                    <form action="/delete/{{ row[0] }}" method="post" onsubmit="return confirm('Видалити це замовлення?');">
+                    <form action="{{ url_for('admin.change_status', request_id=row[0]) }}" method="post">
+                        <select name="status" onchange="this.form.submit()">
+                            {% for s in ['в очікуванні дзвінка','в роботі','виконано'] %}
+                                <option value="{{ s }}" {% if row[8] == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+                <!-- Кнопка видалення -->
+                <td>
+                    <form action="{{ url_for('admin.delete_request', request_id=row[0]) }}" method="post" onsubmit="return confirm('Видалити це замовлення?');">
                         <button type="submit">Видалити</button>
                     </form>
                 </td>
