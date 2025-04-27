@@ -1,74 +1,195 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>Адмін-панель</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Адмін-панель</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Адмін-панель</h2>
+  <h2>Адмін-панель</h2>
 
-    <div class="action-buttons">
-      <a href="{{ url_for('main.home') }}">
-        <button type="button" class="back-btn">← Назад на головну</button>
-      </a>
-      <a href="{{ url_for('admin.admin_logout') }}">
-        <button type="button" class="logout-btn">Вийти</button>
-      </a>
-    </div>
+  <div class="action-buttons">
+    <a href="{{ url_for('main.home') }}">
+      <button class="back-btn">← Назад на головну</button>
+    </a>
+    <a href="{{ url_for('admin.admin_logout') }}">
+      <button class="logout-btn">Вийти</button>
+    </a>
+  </div>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Вкладки -->
+  <div class="tab-container">
+    <button class="tab-button active" data-tab="requests">Заявки</button>
+    <button class="tab-button"       data-tab="users">Користувачі</button>
+  </div>
+
+  <!-- Вміст вкладки "Заявки" -->
+  <div id="tab-requests" class="tab-content">
     {% if requests %}
-    <div class="requests-table">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Ім’я</th>
-            <th>Email</th>
-            <th>Опис</th>
-            <th>Складність</th>
-            <th>Термін</th>
-            <th>Вартість</th>
-            <th>Дата дзвінка</th>
-            <th>Статус</th>
-            <th>Дія</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in requests %}
-          <tr>
-            <td>{{ row[0] }}</td>
-            <td>{{ row[1] }}</td>
-            <td>{{ row[2] }}</td>
-            <td>{{ row[3] }}</td>
-            <td>{{ row[4] }}</td>
-            <td>{{ row[5] }}</td>
-            <td>${{ row[6] }}</td>
-            <td>{{ row[7] }}</td>
-            <td>
-              <form action="{{ url_for('admin.change_status', request_id=row[0]) }}" method="post">
-                <select name="status" class="status-select" onchange="this.form.submit()">
-                  {% for s in ['в очікуванні дзвінка','в роботі','виконано'] %}
-                    <option value="{{ s }}" {% if row[8] == s %}selected{% endif %}>
-                      {{ s }}
-                    </option>
-                  {% endfor %}
-                </select>
-              </form>
-            </td>
-            <td>
-              <form action="{{ url_for('admin.delete_request', request_id=row[0]) }}"
-                    method="post" onsubmit="return confirm('Видалити це замовлення?');">
-                <button type="submit" class="delete-btn">Видалити</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+      <div class="requests-table">
+        <table id="requests-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ім’я</th>
+              <th>Email</th>
+              <th>Опис</th>
+              <th>Складність</th>
+              <th>Термін</th>
+              <th>Вартість</th>
+              <th>Дата дзвінка</th>
+              <th>Статус</th>
+              <th>Рейтинг</th>
+              <th>Дія</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in requests %}
+              <tr>
+                <td>{{ r['id'] }}</td>
+                <td>{{ r['name'] }}</td>
+                <td>{{ r['email'] }}</td>
+                <td>{{ r['description'] }}</td>
+                <td>{{ r['complexity'] }}</td>
+                <td>{{ r['estimated_time'] }}</td>
+                <td>${{ r['estimated_cost'] }}</td>
+                <td>{{ r['meeting_date'] }}</td>
+                <td>{{ r['status'] }}</td>
+                <td>
+                  {% if r['rating'] and r['rating'] > 0 %}
+                    {{ '★' * r['rating'] }}{{ '☆' * (5 - r['rating']) }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="action-cell">
+                  {% if r['status'] != 'виконано' %}
+                    <button type="button" class="complete-btn">Заявка виконана</button>
+                    <form class="complete-form"
+                          method="post"
+                          action="{{ url_for('admin.complete_request', request_id=r['id']) }}">
+                      <div class="star-modal">
+                        <p>Оцініть клієнта:</p>
+                        {% for i in range(1,6) %}
+                          <span class="star" data-value="{{ i }}">☆</span>
+                        {% endfor %}
+                      </div>
+                    </form>
+                  {% else %}
+                    <button class="complete-btn" disabled>Виконано</button>
+                  {% endif %}
+                  <form method="post"
+                        action="{{ url_for('admin.delete_request', request_id=r['id']) }}"
+                        onsubmit="return confirm('Видалити цю заявку?');">
+                    <button type="submit" class="delete-btn">Видалити</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
       <p>Заявок поки що немає.</p>
     {% endif %}
+  </div>
+
+  <!-- Вміст вкладки "Користувачі" -->
+  <div id="tab-users" class="tab-content" style="display:none;">
+    {% if users %}
+      <div class="requests-table">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ім’я</th>
+              <th>Email</th>
+              <th>Заявок</th>
+              <th>Середній рейтинг</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ u['name'] }}</td>
+                <td>{{ u['email'] }}</td>
+                <td>{{ u['total_requests'] }}</td>
+                <td>
+                  {% if u['avg_rating'] and u['avg_rating'] > 0 %}
+                    {{ u['avg_rating'] }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>Немає жодного автору заявки.</p>
+    {% endif %}
+  </div>
+
+  <script>
+    // Перемикання вкладок
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(tc=>{
+          tc.style.display = (tc.id==='tab-'+tab) ? 'block' : 'none';
+        });
+      });
+    });
+
+    // Логіка зірочок (як раніше)
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.complete-btn:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.star-modal').forEach(m=>m.style.display='none');
+          const modal = btn.closest('.action-cell').querySelector('.star-modal');
+          modal.style.display = 'block';
+        });
+      });
+      document.querySelectorAll('.star-modal').forEach(modal => {
+        const stars = Array.from(modal.querySelectorAll('.star'));
+        stars.forEach((star, idx) => {
+          star.addEventListener('mouseover', () => {
+            stars.forEach((s,i)=>s.classList.toggle('hover', i<=idx));
+          });
+          star.addEventListener('mouseout', () => {
+            stars.forEach(s=>s.classList.remove('hover'));
+          });
+          star.addEventListener('click', () => {
+            stars.forEach((s,i)=>s.classList.toggle('selected', i<=idx));
+            const val = star.dataset.value;
+            const form = modal.closest('form');
+            const inp  = document.createElement('input');
+            inp.type  = 'hidden'; inp.name = 'rating'; inp.value = val;
+            form.appendChild(inp);
+            form.submit();
+          });
+        });
+      });
+      document.addEventListener('click', e=>{
+        if (!e.target.closest('.action-cell')) {
+          document.querySelectorAll('.star-modal').forEach(m=>m.style.display='none');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

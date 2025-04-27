@@ -15,7 +15,7 @@ def init_db():
         )
     ''')
 
-    # таблиця заявок з новим полем status
+    # таблиця заявок з полями status та rating
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS requests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,15 +26,24 @@ def init_db():
             estimated_time TEXT,
             estimated_cost REAL,
             meeting_date TEXT,
-            status TEXT DEFAULT 'в очікуванні дзвінка'
+            status TEXT DEFAULT 'в очікуванні дзвінка',
+            rating INTEGER DEFAULT NULL
         )
     ''')
 
-    # Якщо таблиця вже існувала без стовпчика status — додаємо його разово
+    # Якщо таблиця вже існувала без стовпчиків status або rating — додаємо їх разово
     try:
-        cursor.execute("ALTER TABLE requests ADD COLUMN status TEXT DEFAULT 'в очікуванні дзвінка'")
+        cursor.execute(
+            "ALTER TABLE requests ADD COLUMN status TEXT DEFAULT 'в очікуванні дзвінка'"
+        )
     except sqlite3.OperationalError:
-        # якщо стовпець уже є — просто ігноруємо помилку
+        pass
+
+    try:
+        cursor.execute(
+            "ALTER TABLE requests ADD COLUMN rating INTEGER DEFAULT NULL"
+        )
+    except sqlite3.OperationalError:
         pass
 
     conn.commit()
