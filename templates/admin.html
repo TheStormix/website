@@ -7,58 +7,68 @@
 </head>
 <body>
     <h2>Адмін-панель</h2>
-    <p><a href="{{ url_for('main.home') }}">← Назад на головну</a></p>
-    <a href="{{ url_for('admin.admin_logout') }}"><button>Вийти</button></a>
+
+    <div class="action-buttons">
+      <a href="{{ url_for('main.home') }}">
+        <button type="button" class="back-btn">← Назад на головну</button>
+      </a>
+      <a href="{{ url_for('admin.admin_logout') }}">
+        <button type="button" class="logout-btn">Вийти</button>
+      </a>
+    </div>
 
     {% if requests %}
-    <table>
+    <div class="requests-table">
+      <table>
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ім’я</th>
-                <th>Email</th>
-                <th>Опис</th>
-                <th>Складність</th>
-                <th>Термін</th>
-                <th>Вартість</th>
-                <th>Дата дзвінка</th>
-                <th>Статус</th>
-                <th>Дія</th>
-            </tr>
+          <tr>
+            <th>ID</th>
+            <th>Ім’я</th>
+            <th>Email</th>
+            <th>Опис</th>
+            <th>Складність</th>
+            <th>Термін</th>
+            <th>Вартість</th>
+            <th>Дата дзвінка</th>
+            <th>Статус</th>
+            <th>Дія</th>
+          </tr>
         </thead>
         <tbody>
-            {% for row in requests %}
-            <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
-                <td>{{ row[4] }}</td>
-                <td>{{ row[5] }}</td>
-                <td>${{ row[6] }}</td>
-                <td>{{ row[7] }}</td>
-                <!-- Статус із можливістю вибору -->
-                <td>
-                    <form action="{{ url_for('admin.change_status', request_id=row[0]) }}" method="post">
-                        <select name="status" onchange="this.form.submit()">
-                            {% for s in ['в очікуванні дзвінка','в роботі','виконано'] %}
-                                <option value="{{ s }}" {% if row[8] == s %}selected{% endif %}>{{ s }}</option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                </td>
-                <!-- Кнопка видалення -->
-                <td>
-                    <form action="{{ url_for('admin.delete_request', request_id=row[0]) }}" method="post" onsubmit="return confirm('Видалити це замовлення?');">
-                        <button type="submit">Видалити</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+          {% for row in requests %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[5] }}</td>
+            <td>${{ row[6] }}</td>
+            <td>{{ row[7] }}</td>
+            <td>
+              <form action="{{ url_for('admin.change_status', request_id=row[0]) }}" method="post">
+                <select name="status" class="status-select" onchange="this.form.submit()">
+                  {% for s in ['в очікуванні дзвінка','в роботі','виконано'] %}
+                    <option value="{{ s }}" {% if row[8] == s %}selected{% endif %}>
+                      {{ s }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+            <td>
+              <form action="{{ url_for('admin.delete_request', request_id=row[0]) }}"
+                    method="post" onsubmit="return confirm('Видалити це замовлення?');">
+                <button type="submit" class="delete-btn">Видалити</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
+    </div>
     {% else %}
-    <p>Заявок поки що немає.</p>
+      <p>Заявок поки що немає.</p>
     {% endif %}
 </body>
 </html>

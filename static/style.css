@@ -1,4 +1,3 @@
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f7fa;
@@ -231,4 +230,147 @@ input[readonly]:focus, textarea[readonly]:focus {
     outline: none;
 }
 
+/* ===== Адмін-панель: стилізація кнопок і селектів ===== */
 
+/* Кнопка «Назад на головну» */
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 14px;
+  background-color: #3498db;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+.back-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Селект зміни статусу */
+.status-select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #2c3e50;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.status-select:hover {
+  border-color: #3498db;
+}
+.status-select:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Кнопки видалення та виходу */
+.delete-btn,
+.logout-btn {
+  padding: 6px 12px;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+.delete-btn:hover,
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Контейнер для кнопок верхнього рівня */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  /* Загальний стиль для кнопок-посилань */
+  .back-btn,
+  .logout-btn,
+  .delete-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color .2s ease;
+  }
+  
+  /* Синя кнопка «Назад» */
+  .back-btn {
+    background-color: #3498db;
+    color: #fff;
+  }
+  .back-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Червона кнопка «Вийти» та «Видалити» */
+  .logout-btn,
+  .delete-btn {
+    background-color: #e74c3c;
+    color: #fff;
+  }
+  .logout-btn:hover,
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Обгортка таблиці заявок */
+  .requests-table {
+    margin-top: 30px;
+    overflow-x: auto;
+  }
+  .requests-table table {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  /* === Вкладки в профілі === */
+.tab-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  .tab-button {
+    padding: 10px 20px;
+    background: #ecf0f1;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .tab-button.active {
+    background: #3498db;
+    color: white;
+  }
+  .tab-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .profile-form input,
+  .profile-form label {
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  .bottom-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .logout-btn {
+    background-color: #e74c3c !important;
+  }
+  
+  

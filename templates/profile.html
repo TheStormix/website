@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>Профіль</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Особистий кабінет</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <h1>Особистий кабінет</h1>
+
+  <div class="tab-container">
+    <button class="tab-button active" data-tab="tab-info">Особисті дані</button>
+    <button class="tab-button" data-tab="tab-requests">Мої заявки</button>
+  </div>
+
+  <!-- Вкладка: Особисті дані -->
+  <div id="tab-info" class="tab-content">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul class="flash-messages">
@@ -16,61 +25,74 @@
       {% endif %}
     {% endwith %}
 
-    <h1>Особистий кабінет</h1>
-    <p>Ім’я: <strong>{{ username }}</strong></p>
-    <p>Email: <strong>{{ email }}</strong></p>
-    <p>Дата народження: <strong>{{ birthdate or 'Не вказано' }}</strong></p>
+    <p><strong>Ім’я:</strong> {{ username }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    <p><strong>Дата народження:</strong> {{ birthdate or 'Не вказано' }}</p>
 
-    <form method="post">
-        <h3>Оновити дані</h3>
-        <label>Нова дата народження:</label><br>
-        <input type="date" name="birthdate" value="{{ birthdate }}"><br><br>
+    <form method="post" class="profile-form">
+      <h3>Оновити дату народження</h3>
+      <input type="date" name="birthdate" value="{{ birthdate }}">
 
-        <h3>Зміна пароля</h3>
-        <label>Старий пароль:</label><br>
-        <input type="password" name="old_password"><br><br>
+      <h3>Змінити пароль</h3>
+      <label>Старий пароль:</label>
+      <input type="password" name="old_password" placeholder="•••••••">
+      <label>Новий пароль:</label>
+      <input type="password" name="new_password" placeholder="•••••••">
+      <label>Підтвердіть новий пароль:</label>
+      <input type="password" name="confirm_password" placeholder="•••••••">
 
-        <label>Новий пароль:</label><br>
-        <input type="password" name="new_password"><br><br>
-
-        <label>Підтвердіть новий пароль:</label><br>
-        <input type="password" name="confirm_password"><br><br>
-
-        <button type="submit">Зберегти зміни</button>
+      <button type="submit">Зберегти зміни</button>
     </form>
+  </div>
 
-    <br>
-    <a href="{{ url_for('main.home') }}"><button>← Назад на головну</button></a>
-    <a href="{{ url_for('auth.logout') }}"><button>Вийти</button></a>
-
-    <h2>Ваші заявки</h2>
+  <!-- Вкладка: Мої заявки -->
+  <div id="tab-requests" class="tab-content" style="display:none;">
     {% if requests %}
+      <div class="requests-table">
         <table>
-            <thead>
-                <tr>
-                    <th>Опис</th>
-                    <th>Складність</th>
-                    <th>Термін</th>
-                    <th>Вартість</th>
-                    <th>Дата дзвінка</th>
-                    <th>Статус</th>
-                </tr>
-            </thead>
-            <tbody>
+          <thead>
+            <tr>
+              <th>Опис</th><th>Складність</th><th>Термін</th>
+              <th>Вартість</th><th>Дата дзвінка</th><th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
             {% for r in requests %}
             <tr>
-                <td>{{ r[0] }}</td>
-                <td>{{ r[1] }}</td>
-                <td>{{ r[2] }}</td>
-                <td>${{ r[3] }}</td>
-                <td>{{ r[4] }}</td>
-                <td>{{ r[5] }}</td>
+              <td>{{ r[0] }}</td>
+              <td>{{ r[1] }}</td>
+              <td>{{ r[2] }}</td>
+              <td>${{ r[3] }}</td>
+              <td>{{ r[4] }}</td>
+              <td>{{ r[5] }}</td>
             </tr>
             {% endfor %}
-            </tbody>
+          </tbody>
         </table>
+      </div>
     {% else %}
-        <p>У вас ще немає створених заявок.</p>
+      <p>У вас ще немає створених заявок.</p>
     {% endif %}
+  </div>
+
+  <div class="bottom-buttons">
+    <a href="{{ url_for('main.home') }}"><button type="button">← Назад на головну</button></a>
+    <a href="{{ url_for('auth.logout') }}"><button type="button" class="logout-btn">Вийти</button></a>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // переключити кнопки
+        tabs.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        // переключити контент
+        contents.forEach(c=>c.style.display='none');
+        document.getElementById(btn.dataset.tab).style.display='block';
+      });
+    });
+  </script>
 </body>
 </html>
