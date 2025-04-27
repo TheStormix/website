@@ -16,20 +16,42 @@ button,
     text-decoration: none;
     background-color: #3498db;
 }
+
 button:hover,
-.back-btn:hover,
 .complete-btn:hover,
 .tab-button:hover {
     background-color: #2980b9;
 }
+
+.back-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.back-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
 .logout-btn,
 .delete-btn {
     background-color: #e74c3c;
 }
+
 .logout-btn:hover,
 .delete-btn:hover {
     background-color: #c0392b;
 }
+
 .tab-button {
     background-color: #3498db; /* блакитна звичайна кнопка */
     color: white;
@@ -47,4 +69,3 @@ button:hover,
     color: #3498db; /* синій текст */
     border: 2px solid #3498db; /* синя обводка */
 }
-

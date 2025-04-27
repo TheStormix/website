@@ -31,3 +31,19 @@ textarea[readonly] {
     background: #e9ecef;
     cursor: not-allowed;
 }
+#request-form {
+    margin-top: 80px;
+}
+input[readonly],
+textarea[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    color: #6c757d;
+}
+
+input[readonly]:focus,
+textarea[readonly]:focus {
+    outline: none;
+    box-shadow: none;
+}
+

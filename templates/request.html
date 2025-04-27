@@ -14,164 +14,207 @@
 </head>
 <body>
 
-  <!-- HERO BANNER -->
-  <div class="hero request-hero">
-    <div class="hero-content">
-      <h1>Залишити заявку</h1>
-      <p>Отримайте безкоштовну консультацію та орієнтовну оцінку проєкту за 24 години</p>
-      <a href="#request-form"><button class="btn-primary">Перейти до форми</button></a>
-    </div>
+<!-- HERO SECTION -->
+<div class="hero request-hero">
+  <div class="hero-content">
+    <h1>Залишити заявку</h1>
+    <p>Отримайте безкоштовну консультацію та орієнтовну оцінку проєкту за 24 години</p>
+    <a href="#request-form"><button class="btn-primary">Перейти до форми</button></a>
+  </div>
+</div>
+
+<!-- ACTUAL FORM -->
+<div id="request-form" class="form-container">
+  <p><a href="{{ url_for('main.home') }}" class="back-btn">← На головну</a></p>
+
+  <div id="user_choice" {% if session.get('user_id') %}style="display:none"{% endif %}>
+    <p><strong>Ви новий користувач чи вже маєте акаунт?</strong></p>
+    <button type="button" onclick="showForm('new')">Новий (без реєстрації)</button>
+    <button type="button" onclick="showForm('existing')">Вже маю акаунт</button>
   </div>
 
-  <!-- ACTUAL FORM -->
-  <div id="request-form" class="form-container">
-    <!-- Back to home link -->
-    <p><a href="{{ url_for('main.home') }}" class="back-btn">← На головну</a></p>
+  <div id="new_user_form" {% if session.get('user_id') %}style="display:block"{% else %}style="display:none"{% endif %}>
+    <form method="post" enctype="multipart/form-data" oninput="calculateComplexity()">
 
-    <!-- New vs Existing User Choice -->
-    <div id="user_choice" {% if session.get('user_id') %}style="display:none"{% endif %}>
-      <p><strong>Ви новий користувач чи вже маєте акаунт?</strong></p>
-      <button type="button" onclick="showForm('new')">Новий (без реєстрації)</button>
-      <button type="button" onclick="showForm('existing')">Вже маю акаунт</button>
-    </div>
+      <label>Ім'я:</label>
+      <input type="text" name="name" value="{{ user_name or '' }}" {% if user_name %}readonly tabindex="-1"{% endif %} required>
 
-    <!-- New‐user form -->
-    <div id="new_user_form" {% if session.get('user_id') %}style="display:block"{% else %}style="display:none"{% endif %}>
-      <form method="post" oninput="calculateComplexity()">
-        <label>Ім’я:</label>
-        <input
-          type="text"
-          name="name"
-          value="{{ user_name or '' }}"
-          {% if user_name %}readonly{% endif %}
-          required
-        >
+      <label>Email:</label>
+      <input type="email" name="email" value="{{ user_email or '' }}" {% if user_email %}readonly tabindex="-1"{% endif %} required>
 
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value="{{ user_email or '' }}"
-          {% if user_email %}readonly{% endif %}
-          required
-        >
+      <label>Тип продукту:</label>
+      <select name="product_type" id="product_type" onchange="showOptions()" required>
+        <option value="">-- Оберіть --</option>
+        <option value="website">Веб-сайт</option>
+        <option value="app">Мобільний додаток</option>
+        <option value="bot">Telegram-бот</option>
+      </select>
 
-        <label>Тип продукту:</label>
-        <select name="product_type" id="product_type" onchange="showOptions()" required>
-          <option value="">-- Оберіть --</option>
-          <option value="website">Веб-сайт</option>
-          <option value="app">Мобільний додаток</option>
-          <option value="bot">Telegram-бот</option>
+      <!-- Тип сайту -->
+      <div id="site_type_block" style="display:none;">
+        <label>Тип сайту:</label>
+        <select id="site_type" name="site_type">
+          <option value="">-- Оберіть тип сайту --</option>
+          <option value="landing">Лендінг</option>
+          <option value="ecommerce">Інтернет-магазин</option>
+          <option value="corporate">Корпоративний сайт</option>
+        </select>
+      </div>
+
+      <!-- Website options -->
+      <div id="website_options" style="display:none;">
+        <label>Кількість сторінок:</label>
+        <select id="pages" name="pages">
+          <option value="1-2">1-2</option>
+          <option value="3+">3+</option>
         </select>
 
-        <!-- Website options -->
-        <div id="website_options" style="display:none;">
-          <label>Кількість сторінок:</label>
-          <select id="pages" name="pages">
-            <option value="1-2">1-2</option>
-            <option value="3+">3+</option>
-          </select>
-          <div class="checkbox-btn">
-            <input type="checkbox" id="admin_panel" name="admin_panel">
-            <label for="admin_panel">Адмінпанель</label>
-          </div>
-          <div class="checkbox-btn">
-            <input type="checkbox" id="auth" name="auth">
-            <label for="auth">Авторизація</label>
-          </div>
+        <label>Додаткові функції:</label>
+        <div class="option-buttons">
+          <button type="button" class="option-btn" data-target="admin_panel">Адмінпанель</button>
+          <button type="button" class="option-btn" data-target="auth">Авторизація</button>
         </div>
+        <input type="hidden" id="admin_panel" name="admin_panel" value="0">
+        <input type="hidden" id="auth" name="auth" value="0">
+      </div>
 
-        <!-- App options -->
-        <div id="app_options" style="display:none;">
-          <label>Платформа:</label>
-          <select id="platform" name="platform">
-            <option value="android">Android</option>
-            <option value="ios">iOS</option>
-            <option value="both">Android + iOS</option>
-          </select>
-          <div class="checkbox-btn">
-            <input type="checkbox" id="login" name="login">
-            <label for="login">Вхід у систему</label>
-          </div>
-          <div class="checkbox-btn">
-            <input type="checkbox" id="user_profile" name="user_profile">
-            <label for="user_profile">Профіль користувача</label>
-          </div>
+      <!-- App options -->
+      <div id="app_options" style="display:none;">
+        <label>Платформа:</label>
+        <select id="platform" name="platform">
+          <option value="android">Android</option>
+          <option value="ios">iOS</option>
+          <option value="both">Android + iOS</option>
+        </select>
+
+        <label>Додаткові функції:</label>
+        <div class="option-buttons">
+          <button type="button" class="option-btn" data-target="login">Вхід у систему</button>
+          <button type="button" class="option-btn" data-target="user_profile">Профіль користувача</button>
         </div>
+        <input type="hidden" id="login" name="login" value="0">
+        <input type="hidden" id="user_profile" name="user_profile" value="0">
+      </div>
 
-        <!-- Bot options -->
-        <div id="bot_options" style="display:none;">
-          <label>Кількість команд:</label>
-          <select id="bot_commands" name="bot_commands">
-            <option value="few">1-3</option>
-            <option value="many">4+</option>
-          </select>
-          <div class="checkbox-btn">
-            <input type="checkbox" id="bot_database" name="bot_database">
-            <label for="bot_database">Інтеграція з базою даних</label>
-          </div>
-          <div class="checkbox-btn">
-            <input type="checkbox" id="bot_payments" name="bot_payments">
-            <label for="bot_payments">Прийом платежів</label>
-          </div>
+      <!-- Bot options -->
+      <div id="bot_options" style="display:none;">
+        <label>Кількість команд:</label>
+        <select id="bot_commands" name="bot_commands">
+          <option value="few">1-3</option>
+          <option value="many">4+</option>
+        </select>
+
+        <label>Додаткові функції:</label>
+        <div class="option-buttons">
+          <button type="button" class="option-btn" data-target="bot_database">Інтеграція з базою даних</button>
+          <button type="button" class="option-btn" data-target="bot_payments">Прийом платежів</button>
         </div>
+        <input type="hidden" id="bot_database" name="bot_database" value="0">
+        <input type="hidden" id="bot_payments" name="bot_payments" value="0">
+      </div>
 
-        <input type="hidden" name="complexity" id="complexity" value="low">
+      <input type="hidden" name="complexity" id="complexity" value="low">
 
-        <label>Опис проєкту:</label>
-        <textarea name="description" required></textarea>
+      <label>Опис проєкту:</label>
+      <textarea name="description" required></textarea>
 
-        <button type="submit" class="btn-primary">Надіслати</button>
-      </form>
-    </div>
+      <label>Прикріпити файл ТЗ (pdf, doc, docx, txt):</label>
+      <input type="file" id="file_upload" name="file_upload" accept=".pdf,.doc,.docx,.txt">
+      <!-- Бажаний час зв'язку -->
+      <label>Коли з вами найкраще зв'язатися?</label>
+      <select name="contact_time">
+        <option value="">-- Оберіть --</option>
+        <option value="morning">Ранок</option>
+        <option value="day">День</option>
+        <option value="evening">Вечір</option>
+      </select>
 
-    <!-- Existing‐user redirect -->
-    <div id="login_form" style="display:none">
-      <form method="get" action="{{ url_for('auth.user_login') }}">
-        <input type="hidden" name="next" value="{{ url_for('main.request_form') }}">
-        <p>Будь ласка, увійдіть у свій акаунт щоб залишити заявку.</p>
-        <button type="submit" class="btn-primary">Увійти</button>
-      </form>
-    </div>
+      <button type="submit" class="btn-primary">Надіслати</button>
+    </form>
   </div>
 
-  <script>
-    function showForm(type) {
-      document.getElementById('user_choice').style.display = 'none';
-      document.getElementById('new_user_form').style.display = (type==='new')      ? 'block' : 'none';
-      document.getElementById('login_form').style.display   = (type==='existing') ? 'block' : 'none';
-    }
+  <div id="login_form" style="display:none">
+    <form method="get" action="{{ url_for('auth.user_login') }}">
+      <input type="hidden" name="next" value="{{ url_for('main.request_form') }}">
+      <p>Будь ласка, увійдіть у свій акаунт щоб залишити заявку.</p>
+      <button type="submit" class="btn-primary">Увійти</button>
+    </form>
+  </div>
+</div>
 
-    function showOptions() {
-      const t = document.getElementById('product_type').value;
-      document.getElementById('website_options').style.display = t==='website' ? 'block' : 'none';
-      document.getElementById('app_options').style.display     = t==='app'     ? 'block' : 'none';
-      document.getElementById('bot_options').style.display     = t==='bot'     ? 'block' : 'none';
-      calculateComplexity();
-    }
+<script>
+  function showForm(type) {
+    document.getElementById('user_choice').style.display = 'none';
+    document.getElementById('new_user_form').style.display = (type==='new') ? 'block' : 'none';
+    document.getElementById('login_form').style.display = (type==='existing') ? 'block' : 'none';
+  }
 
-    function calculateComplexity() {
-      let score = 0, t = document.getElementById('product_type').value;
-      if (t==='website') {
-        if (document.getElementById('pages').value==='3+') score +=2;
-        if (document.getElementById('admin_panel').checked) score +=2;
-        if (document.getElementById('auth').checked) score +=1;
-      }
-      if (t==='app') {
-        if (document.getElementById('platform').value==='both') score +=2;
-        if (document.getElementById('login').checked) score +=1;
-        if (document.getElementById('user_profile').checked) score +=2;
-      }
-      if (t==='bot') {
-        if (document.getElementById('bot_commands').value==='many') score +=2;
-        if (document.getElementById('bot_payments').checked) score +=2;
-        if (document.getElementById('bot_database').checked) score +=1;
-      }
-      let c = 'low';
-      if (score>=3 && score<5) c='medium';
-      if (score>=5) c='high';
-      document.getElementById('complexity').value = c;
+  function showOptions() {
+    const t = document.getElementById('product_type').value;
+    document.getElementById('website_options').style.display = t==='website' ? 'block' : 'none';
+    document.getElementById('app_options').style.display = t==='app' ? 'block' : 'none';
+    document.getElementById('bot_options').style.display = t==='bot' ? 'block' : 'none';
+    document.getElementById('site_type_block').style.display = t==='website' ? 'block' : 'none';
+    if (t !== 'website') {
+      document.getElementById('site_type').value = '';
     }
-  </script>
+    calculateComplexity();
+  }
+
+  function calculateComplexity() {
+    let score = 0, t = document.getElementById('product_type').value;
+    if (t==='website') {
+      if (document.getElementById('pages').value==='3+') score +=2;
+      if (document.getElementById('admin_panel').value==='1') score +=2;
+      if (document.getElementById('auth').value==='1') score +=1;
+    }
+    if (t==='app') {
+      if (document.getElementById('platform').value==='both') score +=2;
+      if (document.getElementById('login').value==='1') score +=1;
+      if (document.getElementById('user_profile').value==='1') score +=2;
+    }
+    if (t==='bot') {
+      if (document.getElementById('bot_commands').value==='many') score +=2;
+      if (document.getElementById('bot_payments').value==='1') score +=2;
+      if (document.getElementById('bot_database').value==='1') score +=1;
+    }
+    let c = 'low';
+    if (score>=3 && score<5) c='medium';
+    if (score>=5) c='high';
+    document.getElementById('complexity').value = c;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.option-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (button.classList.contains('active')) {
+          button.classList.remove('active');
+          input.value = "0";
+        } else {
+          button.classList.add('active');
+          input.value = "1";
+        }
+        calculateComplexity();
+      });
+    });
+
+    document.querySelectorAll('input[readonly]').forEach(input => {
+      input.addEventListener('focus', (e) => {
+        e.target.blur();
+      });
+    });
+
+    document.getElementById('file_upload').addEventListener('change', function() {
+      const file = this.files[0];
+      if (file && file.size > 5 * 1024 * 1024) {
+        alert('Файл занадто великий. Максимальний розмір файлу 5 МБ.');
+        this.value = '';
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
