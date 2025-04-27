@@ -6,54 +6,49 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h2>Адмін-панель</h2>
+  <div class="admin-wrapper">
+    <h2>Адмін-панель</h2>
 
-  <div class="action-buttons">
-    <a href="{{ url_for('main.home') }}">
-      <button class="back-btn">← Назад на головну</button>
-    </a>
-    <a href="{{ url_for('admin.admin_logout') }}">
-      <button class="logout-btn">Вийти</button>
-    </a>
-  </div>
+    <!-- Кнопки Назад і Вихід -->
+    <div class="action-buttons">
+      <a href="{{ url_for('main.home') }}">
+        <button class="back-btn">← Назад на головну</button>
+      </a>
+      <a href="{{ url_for('admin.admin_logout') }}">
+        <button class="logout-btn">Вийти</button>
+      </a>
+    </div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul class="flash-messages">
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+    <!-- Flash-повідомлення -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
-  <!-- Вкладки -->
-  <div class="tab-container">
-    <button class="tab-button active" data-tab="requests">Заявки</button>
-    <button class="tab-button"       data-tab="users">Користувачі</button>
-  </div>
+    <!-- Вкладки -->
+    <div class="tab-container">
+      <button class="tab-button active" data-tab="requests">Заявки</button>
+      <button class="tab-button" data-tab="users">Користувачі</button>
+    </div>
 
-  <!-- Вміст вкладки "Заявки" -->
-  <div id="tab-requests" class="tab-content">
-    {% if requests %}
-      <div class="requests-table">
-        <table id="requests-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Ім’я</th>
-              <th>Email</th>
-              <th>Опис</th>
-              <th>Складність</th>
-              <th>Термін</th>
-              <th>Вартість</th>
-              <th>Дата дзвінка</th>
-              <th>Статус</th>
-              <th>Рейтинг</th>
-              <th>Дія</th>
-            </tr>
-          </thead>
-          <tbody>
+    <!-- Вкладка Заявки -->
+    <div id="tab-requests" class="tab-content">
+      {% if requests %}
+        <div class="requests-table">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Ім’я</th><th>Email</th><th>Опис</th>
+                <th>Складність</th><th>Термін</th><th>Вартість</th>
+                <th>Дата дзвінка</th><th>Статус</th><th>Рейтинг</th><th>Дія</th>
+              </tr>
+            </thead>
+            <tbody>
             {% for r in requests %}
               <tr>
                 <td>{{ r['id'] }}</td>
@@ -67,10 +62,8 @@
                 <td>{{ r['status'] }}</td>
                 <td>
                   {% if r['rating'] and r['rating'] > 0 %}
-                    {{ '★' * r['rating'] }}{{ '☆' * (5 - r['rating']) }}
-                  {% else %}
-                    —
-                  {% endif %}
+                    {{ '★'*r['rating'] }}{{ '☆'*(5-r['rating']) }}
+                  {% else %}—{% endif %}
                 </td>
                 <td class="action-cell">
                   {% if r['status'] != 'виконано' %}
@@ -96,29 +89,25 @@
                 </td>
               </tr>
             {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p>Заявок поки що немає.</p>
-    {% endif %}
-  </div>
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p>Заявок поки що немає.</p>
+      {% endif %}
+    </div>
 
-  <!-- Вміст вкладки "Користувачі" -->
-  <div id="tab-users" class="tab-content" style="display:none;">
-    {% if users %}
-      <div class="requests-table">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Ім’я</th>
-              <th>Email</th>
-              <th>Заявок</th>
-              <th>Середній рейтинг</th>
-            </tr>
-          </thead>
-          <tbody>
+    <!-- Вкладка Користувачі -->
+    <div id="tab-users" class="tab-content" style="display:none;">
+      {% if users %}
+        <div class="requests-table">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Ім’я</th><th>Email</th><th>Заявок</th><th>Середній рейтинг</th>
+              </tr>
+            </thead>
+            <tbody>
             {% for u in users %}
               <tr>
                 <td>{{ loop.index }}</td>
@@ -128,65 +117,61 @@
                 <td>
                   {% if u['avg_rating'] and u['avg_rating'] > 0 %}
                     {{ u['avg_rating'] }}
-                  {% else %}
-                    —
-                  {% endif %}
+                  {% else %}—{% endif %}
                 </td>
               </tr>
             {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p>Немає жодного автору заявки.</p>
-    {% endif %}
-  </div>
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p>Немає жодного автора заявки.</p>
+      {% endif %}
+    </div>
+  </div> <!-- /.admin-wrapper -->
 
   <script>
     // Перемикання вкладок
     document.querySelectorAll('.tab-button').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-        document.querySelectorAll('.tab-content').forEach(tc=>{
-          tc.style.display = (tc.id==='tab-'+tab) ? 'block' : 'none';
+        document.querySelectorAll('.tab-content').forEach(tc => {
+          tc.style.display = (tc.id === 'tab-' + tab) ? 'block' : 'none';
         });
       });
     });
 
-    // Логіка зірочок (як раніше)
+    // Логіка зірочок
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.complete-btn:not([disabled])').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.star-modal').forEach(m=>m.style.display='none');
-          const modal = btn.closest('.action-cell').querySelector('.star-modal');
-          modal.style.display = 'block';
+          document.querySelectorAll('.star-modal').forEach(m => m.style.display = 'none');
+          btn.closest('.action-cell').querySelector('.star-modal').style.display = 'block';
         });
       });
-      document.querySelectorAll('.star-modal').forEach(modal => {
-        const stars = Array.from(modal.querySelectorAll('.star'));
-        stars.forEach((star, idx) => {
-          star.addEventListener('mouseover', () => {
-            stars.forEach((s,i)=>s.classList.toggle('hover', i<=idx));
-          });
-          star.addEventListener('mouseout', () => {
-            stars.forEach(s=>s.classList.remove('hover'));
-          });
-          star.addEventListener('click', () => {
-            stars.forEach((s,i)=>s.classList.toggle('selected', i<=idx));
-            const val = star.dataset.value;
-            const form = modal.closest('form');
-            const inp  = document.createElement('input');
-            inp.type  = 'hidden'; inp.name = 'rating'; inp.value = val;
-            form.appendChild(inp);
-            form.submit();
-          });
+      document.querySelectorAll('.star-modal .star').forEach((star, idx) => {
+        const siblings = Array.from(star.closest('.star-modal').querySelectorAll('.star'));
+        star.addEventListener('mouseover', () =>
+          siblings.forEach((s,i) => s.classList.toggle('hover', i <= idx))
+        );
+        star.addEventListener('mouseout', () =>
+          siblings.forEach(s => s.classList.remove('hover'))
+        );
+        star.addEventListener('click', () => {
+          siblings.forEach((s,i) => s.classList.toggle('selected', i <= idx));
+          const val = star.dataset.value;
+          const form = star.closest('form');
+          const inp = document.createElement('input');
+          inp.type = 'hidden'; inp.name = 'rating'; inp.value = val;
+          form.appendChild(inp);
+          form.submit();
         });
       });
-      document.addEventListener('click', e=>{
+      document.addEventListener('click', e => {
         if (!e.target.closest('.action-cell')) {
-          document.querySelectorAll('.star-modal').forEach(m=>m.style.display='none');
+          document.querySelectorAll('.star-modal').forEach(m => m.style.display = 'none');
         }
       });
     });

@@ -1,18 +1,112 @@
 /* === БАЗОВІ СТИЛІ === */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f7fa;
     margin: 0;
-    padding: 20px;
-  }
-  h1, h2 {
-    color: #2c3e50;
-    margin-top: 0;
+    padding: 0;
+    background-color: #f5f7fa;
   }
   
-  /* === ФОРМИ === */
+  /* === HERO SECTION === */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    background-image: url('/static/img/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    padding: 0 20px;
+  }
+  .hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .hero-content p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .btn-primary {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color .2s ease;
+  }
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+  
+  /* === ПРОФІЛЬНЕ МЕНЮ === */
+  .profile-menu {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+  }
+  .profile-menu .profile-icon {
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .profile-menu .profile-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  /* Dropdown під іконкою */
+  .profile-menu .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 1001;
+  }
+  .profile-menu .dropdown-menu.show {
+    display: block;
+  }
+  .profile-menu .dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+  }
+  .profile-menu .dropdown-menu a:hover {
+    background: #f0f0f0;
+  }
+  
+  /* === ФОРМИ, ТАБИ, ПІДТВЕРДЖЕННЯ === */
   form, .tab-content, .confirmation {
-    background-color: #fff;
+    background: #fff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -24,8 +118,6 @@ body {
     display: block;
     margin-bottom: 6px;
   }
-  
-  /* Вхідні поля, textarea, select */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -37,57 +129,55 @@ body {
     border: 1px solid #ccc;
     border-radius: 6px;
     box-sizing: border-box;
-    background-color: #fff;
     font-size: 14px;
+    background: #fff;
   }
   input[readonly],
   textarea[readonly] {
-    background-color: #e9ecef;
+    background: #e9ecef;
     cursor: not-allowed;
-    pointer-events: none;
   }
   
   /* === КНОПКИ === */
-  button,
-  .back-btn,
-  .logout-btn,
-  .delete-btn,
-  .complete-btn,
-  .tab-button {
-    display: inline-block;
-    padding: 8px 16px;
-    font-size: 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-align: center;
-    text-decoration: none;
-    color: #fff;
-  }
+/* Загальні властивості для всіх кнопок */
+button,
+.back-btn,
+.logout-btn,
+.delete-btn,
+.complete-btn,
+.tab-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color .2s ease;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #3498db;    /* робимо синій бекграунд за замовчуванням */
+}
+
+/* Ховер для всіх кнопок, крім червоних */
+button:hover,
+.back-btn:hover,
+.complete-btn:hover,
+.tab-button:hover {
+  background-color: #2980b9;
+}
+
+/* Спеціальний червоний стиль для видалення / виходу */
+.logout-btn,
+.delete-btn {
+  background-color: #e74c3c;
+}
+.logout-btn:hover,
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
   
-  /* Основні кольори */
-  button,
-  .complete-btn,
-  .back-btn {
-    background-color: #3498db;
-  }
-  button:hover,
-  .complete-btn:hover,
-  .back-btn:hover {
-    background-color: #2980b9;
-  }
-  
-  .logout-btn,
-  .delete-btn {
-    background-color: #e74c3c;
-  }
-  .logout-btn:hover,
-  .delete-btn:hover {
-    background-color: #c0392b;
-  }
-  
-  /* === ТАБИ В ПРОФІЛІ === */
+  /* === ТАБИ === */
   .tab-container {
     display: flex;
     gap: 10px;
@@ -99,6 +189,7 @@ body {
   }
   .tab-button.active {
     background: #3498db;
+    color: #fff;
   }
   
   /* === ТАБЛИЦІ === */
@@ -117,10 +208,10 @@ body {
     text-align: left;
   }
   th.sortable {
-    cursor: pointer;
     position: relative;
-    user-select: none;
+    cursor: pointer;
     padding-right: 20px;
+    user-select: none;
   }
   th.sortable::after {
     content: '⇅';
@@ -165,167 +256,63 @@ body {
     border-left: 6px solid #dc3545;
   }
   
-  /* === ПРОФІЛЬНЕ МЕНЮ === */
-  .profile-menu {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-  }
-  .profile-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    margin-top: 10px;
-    z-index: 100;
-  }
-  .dropdown-menu a {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-  }
-  .dropdown-menu a:hover {
-    background: #f0f0f0;
-  }
-  .show {
-    display: block;
-  }
-  
-  /* === ВИБІР КОРИСТУВАЧА === */
-  #user_choice {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  #user_choice p {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  #user_choice button {
-    margin: 0 5px 12px;
-    padding: 10px 20px;
-    font-size: 16px;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  #new_user_form,
-  #login_form {
-    display: none;
-    animation: fadeIn 0.5s ease-in-out forwards;
-  }
-  
-  /* === АДМІН-ПАНЕЛЬ: ДІЯ === */
+  /* === ADMIN: ДІЇ === */
   .action-buttons {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
   }
   .action-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .complete-btn,
-  .delete-btn {
-    width: 100%;
-  }
-  
-  /* === СЕЛЕКТ СТАТУСУ === */
-  .status-select {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  .status-select:focus,
-  .status-select:hover {
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
-  }
-/* === Адмін-панель: Контейнер дій === */
-.action-cell {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    align-items: stretch;
-    /* прибираємо будь-які фони чи тіні з контейнера */
+  }
+  .action-cell form {
+    margin: 0;
+    padding: 0;
     background: none;
     box-shadow: none;
-    padding: 0;
-    margin: 0;
   }
-  
-  /* === Загальні форми всередині action-cell — формів не видно === */
-  .action-cell form {
-    background: none !important;
-    box-shadow: none !important;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* === Кнопки у стовпці "Дія" === */
   .complete-btn,
   .delete-btn {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
+    font-size: 14px;
     border: none;
     border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
     color: #fff;
+    cursor: pointer;
     transition: background 0.2s;
   }
+  .complete-btn { background: #3498db; }
+  .complete-btn:hover { background: #2980b9; }
+  .complete-btn[disabled] {
+    background: #7f8c8d;
+    cursor: not-allowed;
+  }
+  .delete-btn { background: #e74c3c; }
+  .delete-btn:hover { background: #c0392b; }
   
-  /* "Заявка виконана" */
-  .complete-btn {
-    background-color: #3498db;
-  }
-  .complete-btn:hover {
-    background-color: #2980b9;
-  }
-  
-  /* "Видалити" */
-  .delete-btn {
-    background-color: #e74c3c;
-  }
-  .delete-btn:hover {
-    background-color: #c0392b;
-  }
-  
-  /* === Модалка зірочок === */
+  /* === STAR-MODAL === */
   .star-modal {
-    display: none;              /* ховаємо за замовчуванням */
+    display: none;
     position: absolute;
-    top: 100%;                  /* прямо під контейнером */
+    top: calc(100% + 4px);
     right: 0;
-    width: 180px;
-    padding: 8px;
-    background: #ffffff;
+    width: 160px;
+    background: #fff;
     border: 1px solid #ccc;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 8px;
     text-align: center;
-    z-index: 10;
+    z-index: 1002;
   }
-  
   .star-modal p {
     margin: 0 0 8px;
-    font-size: 14px;
     font-weight: bold;
   }
-  
   .star-modal .star {
     font-size: 24px;
     color: #ddd;
@@ -337,104 +324,77 @@ body {
   .star-modal .star.selected {
     color: #f1c40f;
   }
-  /* ————— Actions column ————— */
-.action-cell {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
   
-  /* кнопки “виконано” та “видалити” */
-  .complete-btn,
-  .delete-btn {
-    width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
-  }
-  
-  .complete-btn {
-    background-color: #3498db;
-  }
-  .complete-btn:hover {
-    background-color: #2980b9;
-  }
-  .complete-btn[disabled] {
-    background-color: #7f8c8d;
-    cursor: not-allowed;
-  }
-  
-  .delete-btn {
-    background-color: #e74c3c;
-  }
-  .delete-btn:hover {
-    background-color: #c0392b;
-  }
-  
-  /* модалка зі зірочками */
-  .star-modal {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 160px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    padding: 8px;
-    text-align: center;
-    z-index: 10;
-  }
-  .star-modal p {
-    margin: 0 0 8px;
-    font-weight: bold;
-  }
-  .star-modal .star {
-    font-size: 24px;
-    color: #ddd;
-    cursor: pointer;
-    margin: 0 2px;
-    transition: color 0.2s;
-  }
-  .star-modal .star.hover,
-  .star-modal .star.selected {
-    color: #f1c40f;
-  }
-  /* ========== Кастомні чекбокси ========== */
-.checkbox-btn {
+  /* === CUSTOM CHECKBOXES === */
+  .checkbox-btn {
     display: inline-block;
     margin: 6px 6px 6px 0;
   }
-  
   .checkbox-btn input[type="checkbox"] {
-    /* ховаємо справжній чекбокс */
     display: none;
   }
-  
   .checkbox-btn label {
-    display: inline-block;
     padding: 10px 15px;
     border: 2px solid #3498db;
     border-radius: 6px;
-    cursor: pointer;
-    background-color: #fff;
+    background: #fff;
     color: #3498db;
-    transition: all 0.2s ease;
+    cursor: pointer;
+    transition: all .2s ease;
     user-select: none;
   }
-  
   .checkbox-btn input[type="checkbox"]:checked + label {
-    background-color: #3498db;
+    background: #3498db;
     color: #fff;
     font-weight: bold;
   }
+  /* — центруємо кнопку “← На головну” */
+.back-btn {
+    display: inline-block;
+    margin: 20px auto 10px; /* зверху/знизу відступ, автоматичні лівий/правий поля */
+  }
   
+  /* — центруємо блок вибору користувача */
+  #user_choice {
+    max-width: 700px;        /* така ж ширина, як у форми */
+    margin: 20px auto;       /* автоматичні лівий/правий відступи */
+    text-align: center;      /* щоб кнопки всередині теж були по центру */
+  }
+  /* Обмежуємо ширину адмінки і центруємо контент */
+.admin-wrapper {
+    max-width: 1200px;    /* або яка вам потрібна ширина */
+    margin: 0 auto;       /* центрування по горизонталі */
+    padding: 0 20px;      /* відступи з боків */
+  }
+  
+  /* Прибираємо зайвий мобілізатор flex, якщо він був */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    justify-content: flex-start; /* кнопки прилипають до лівого краю wrapper’а */
+  }
+  .admin-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .action-buttons {
+    display: flex;
+    align-items: center;   /* вирівнюємо кнопки по вертикалі */
+    gap: 10px;             /* відстань між кнопками */
+    /* більше не потрібні margin чи justify-content: space-between, то видаляємо їх */
+}
+/* Тепер прибираємо будь-які автоматичні відступи у самої лівої кнопки */
+.back-btn {
+    display: inline-block; /* залишаємо як кнопка */
+    margin: 0;             /* стираємо всі відступи, які центрували її раніше */
+}
+
+/* За потреби, якщо “Вийти” мала власні margin’и, теж їх обнуляємо */
+.logout-btn {
+    margin: 0;
+}
   
   
   
