@@ -28,11 +28,12 @@ def register():
 
 @bp.route('/user-login', methods=['GET', 'POST'])
 def user_login():
-    next_page = request.args.get('next') if request.method == 'GET' else request.form.get('next')
+    next_page = request.args.get('next')
 
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        next_page = request.form.get('next')  # Щоб витягнути next після POST
 
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
@@ -44,15 +45,14 @@ def user_login():
             session['user_id'] = user[0]
             session['username'] = user[1]
 
-            if next_page:
-                return redirect(next_page)   # <<< залишаємо так
-            else:
-                return redirect(url_for('user.profile'))
+            if next_page and next_page.startswith('/'):
+                return redirect(next_page)
+            return redirect(url_for('user.profile'))
         else:
             flash("Невірний email або пароль", "error")
             return redirect(url_for('auth.user_login', next=next_page))
 
-    return render_template('user_login.html', next_page=next_page)
+    return render_template('user_login.html', next=next_page)
 
 @bp.route('/logout')
 def logout():
