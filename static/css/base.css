@@ -1,0 +1,141 @@
+/* === БАЗОВІ СТИЛІ === */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+}
+h1, h2 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+/* === ПРОДОВЖЕННЯ ДЛЯ ГОЛОВНОЇ СТОРІНКИ === */
+
+/* Блок \"Про нас\" */
+.about-us {
+    background-color: #f5f7fa;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .about-us h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  .about-us p {
+    font-size: 18px;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  /* Блок \"Наші послуги\" */
+  .services {
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .services-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .service-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 250px;
+    transition: transform 0.3s;
+  }
+  .service-item:hover {
+    transform: translateY(-5px);
+  }
+  .service-item h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .service-item p {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  /* Блок \"Як ми працюємо\" */
+  .how-we-work {
+    background-color: #f5f7fa;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+  }
+  .circle {
+    background-color: #3498db;
+    color: white;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  /* Блок \"Відгуки клієнтів\" */
+  .testimonials {
+    padding: 60px 20px;
+    text-align: center;
+  }
+  .testimonial-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .testimonial {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 300px;
+  }
+  .testimonial p {
+    font-size: 16px;
+    color: #555;
+  }
+  .testimonial span {
+    display: block;
+    margin-top: 10px;
+    color: #888;
+    font-size: 14px;
+  }
+  
+  /* Футер */
+  .footer {
+    background-color: #222;
+    color: #aaa;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 14px;
+  }
+  .footer a {
+    color: #aaa;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+  .footer a:hover {
+    text-decoration: underline;
+  }
+  

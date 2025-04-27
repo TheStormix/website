@@ -1,0 +1,34 @@
+/* === ТАБЛИЦІ === */
+.requests-table {
+    margin-top: 30px;
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+th.sortable {
+    position: relative;
+    cursor: pointer;
+    padding-right: 20px;
+    user-select: none;
+}
+th.sortable::after {
+    content: '⇅';
+    position: absolute;
+    right: 8px;
+    color: #888;
+    font-size: 0.8em;
+}
+th.sorted-asc::after {
+    content: '▲';
+}
+th.sorted-desc::after {
+    content: '▼';
+}

@@ -1,0 +1,69 @@
+/* === ADMIN: ДІЇ === */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    align-items: center;
+}
+.action-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.action-cell form {
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+}
+.complete-btn,
+.delete-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.complete-btn { background: #3498db; }
+.complete-btn:hover { background: #2980b9; }
+.complete-btn[disabled] {
+    background: #7f8c8d;
+    cursor: not-allowed;
+}
+.delete-btn { background: #e74c3c; }
+.delete-btn:hover { background: #c0392b; }
+
+/* === STAR-MODAL === */
+.star-modal {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    width: 160px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 8px;
+    text-align: center;
+    z-index: 1002;
+}
+.star-modal p {
+    margin: 0 0 8px;
+    font-weight: bold;
+}
+.star-modal .star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    margin: 0 4px;
+    transition: color 0.2s;
+}
+.star-modal .star.hover,
+.star-modal .star.selected {
+    color: #f1c40f;
+}

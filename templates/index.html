@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Головна сторінка</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile-menu.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/flash-messages.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
 </head>
 <body>
 
@@ -33,6 +40,93 @@
     </div>
   </div>
 
+  <!-- Блок "Про нас" -->
+  <section class="about-us">
+    <div class="container">
+      <h2>Хто ми такі?</h2>
+      <p>Ми - команда професіоналів, яка допомагає бізнесу реалізовувати свої ідеї в реальність через якісні IT-продукти. Працюємо швидко, якісно та на результат.</p>
+    </div>
+  </section>
+
+  <!-- Блок "Наші послуги" -->
+  <section class="services">
+    <div class="container">
+      <h2>Наші послуги</h2>
+      <div class="services-grid">
+        <div class="service-item">
+          <h3>🌐 Створення сайтів</h3>
+          <p>Розробляємо сучасні сайти для бізнесу та персональних проєктів.</p>
+        </div>
+        <div class="service-item">
+          <h3>📱 Мобільні додатки</h3>
+          <p>Створюємо зручні додатки для iOS та Android платформ.</p>
+        </div>
+        <div class="service-item">
+          <h3>🤖 Telegram-боти</h3>
+          <p>Розробляємо ботів для автоматизації вашого бізнесу у Telegram.</p>
+        </div>
+        <div class="service-item">
+          <h3>🛠️ Підтримка проєктів</h3>
+          <p>Технічна підтримка, оновлення та розвиток ваших проєктів.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Блок "Як ми працюємо" -->
+  <section class="how-we-work">
+    <div class="container">
+      <h2>Як ми працюємо?</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="circle">1</div>
+          <p>Ваша заявка</p>
+        </div>
+        <div class="step">
+          <div class="circle">2</div>
+          <p>Безкоштовна консультація</p>
+        </div>
+        <div class="step">
+          <div class="circle">3</div>
+          <p>Розробка продукту</p>
+        </div>
+        <div class="step">
+          <div class="circle">4</div>
+          <p>Запуск і підтримка</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Блок "Відгуки клієнтів" -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>Відгуки клієнтів</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial">
+          <p>"Дуже швидка робота і крутий результат! Рекомендую!"</p>
+          <span>- Олександр К.</span>
+        </div>
+        <div class="testimonial">
+          <p>"Розробили Telegram-бота для автоматизації процесів. Все працює ідеально!"</p>
+          <span>- Марія П.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Футер -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Ваша компанія. Усі права захищено.</p>
+      <div class="socials">
+        <a href="#">Instagram</a> |
+        <a href="#">Facebook</a> |
+        <a href="#">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
   <script>
     function toggleMenu() {
       document.getElementById("dropdown").classList.toggle("show");
@@ -43,5 +137,6 @@
       }
     });
   </script>
+
 </body>
 </html>

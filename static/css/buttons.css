@@ -1,0 +1,50 @@
+/* === КНОПКИ === */
+button,
+.back-btn,
+.logout-btn,
+.delete-btn,
+.complete-btn,
+.tab-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color .2s ease;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    background-color: #3498db;
+}
+button:hover,
+.back-btn:hover,
+.complete-btn:hover,
+.tab-button:hover {
+    background-color: #2980b9;
+}
+.logout-btn,
+.delete-btn {
+    background-color: #e74c3c;
+}
+.logout-btn:hover,
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+.tab-button {
+    background-color: #3498db; /* блакитна звичайна кнопка */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+    margin-right: 10px;
+}
+
+.tab-button.active {
+    background-color: #ffffff; /* білий фон для активної */
+    color: #3498db; /* синій текст */
+    border: 2px solid #3498db; /* синя обводка */
+}
+
