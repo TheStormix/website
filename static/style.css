@@ -35,7 +35,13 @@ select {
     border: 1px solid #ccc;
     border-radius: 6px;
     box-sizing: border-box;
+    background-color: #ffffff; /* Білий фон */
+    cursor: pointer; /* Замість текстового курсора — стрілочка */
+    appearance: none; /* Прибирає стандартний вигляд стрілки в деяких браузерах */
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
+
 
 .checkbox-btn {
     display: inline-block;
@@ -214,4 +220,15 @@ th, td {
     0% { opacity: 0; transform: scale(0.95); }
     100% { opacity: 1; transform: scale(1); }
 }
+
+input[readonly], textarea[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+input[readonly]:focus, textarea[readonly]:focus {
+    outline: none;
+}
+
 

@@ -62,21 +62,19 @@
 
 <h1>Залишити заявку</h1>
 
-<!-- Питання чи форма -->
 <div id="user_choice" {% if session.get('user_id') %}style="display:none;"{% endif %}>
     <p><b>Ви новий користувач чи вже маєте акаунт?</b></p>
     <button onclick="showForm('new')">Новий користувач (без реєстрації)</button>
     <button onclick="showForm('existing')">Вже маю акаунт</button>
 </div>
 
-<!-- Форма для нових користувачів -->
 <div id="new_user_form" {% if session.get('user_id') %}style="display:block;"{% else %}style="display:none;"{% endif %}>
     <form method="post" oninput="calculateComplexity()">
         <label>Ім’я:</label><br>
-        <input type="text" name="name" required><br>
+        <input type="text" name="name" value="{{ user_name or '' }}" {% if user_name %}readonly="readonly"{% endif %} required><br>
 
         <label>Email:</label><br>
-        <input type="email" name="email" required><br>
+        <input type="email" name="email" value="{{ user_email or '' }}" {% if user_email %}readonly="readonly"{% endif %} required><br>
 
         <label>Тип продукту:</label><br>
         <select name="product_type" id="product_type" onchange="showOptions()" required>
@@ -139,6 +137,7 @@
         </div><br>
 
         <input type="hidden" name="complexity" id="complexity" value="low">
+
         <label>Опис проєкту:</label><br>
         <textarea name="description" required></textarea><br>
 
@@ -146,7 +145,6 @@
     </form>
 </div>
 
-<!-- Форма логіну для існуючих користувачів -->
 <div id="login_form" style="display:none;">
     <form method="get" action="{{ url_for('auth.user_login') }}">
         <input type="hidden" name="next" value="{{ url_for('main.request_form') }}">

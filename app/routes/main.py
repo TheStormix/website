@@ -14,6 +14,20 @@ def home():
 
 @bp.route('/request', methods=['GET', 'POST'])
 def request_form():
+    user_name = ""
+    user_email = ""
+
+    # Якщо користувач залогінений, витягуємо його дані
+    if 'user_id' in session:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT username, email FROM users WHERE id=?', (session['user_id'],))
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            user_name = user[0]
+            user_email = user[1]
+
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -74,4 +88,4 @@ IT-компанія
             complexity=complexity
         )
 
-    return render_template('request.html')
+    return render_template('request.html', user_name=user_name, user_email=user_email)
