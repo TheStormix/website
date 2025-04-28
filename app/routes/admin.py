@@ -28,11 +28,13 @@ def admin_panel():
     # 1) Всі заявки
     reqs = conn.execute('''
         SELECT id, name, email, description,
-               complexity, estimated_time, estimated_cost, meeting_date,
-               status, COALESCE(rating,0) AS rating
-          FROM requests
-         ORDER BY id DESC
+           complexity, estimated_time, estimated_cost, meeting_date,
+           status, COALESCE(rating,0) AS rating,
+           file_path
+        FROM requests
+        ORDER BY id DESC
     ''').fetchall()
+
 
     # 2) Унікальні "користувачі" з таблиці requests,
     #    з підрахунком кількості заявок і середнім рейтингом

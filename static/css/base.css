@@ -203,4 +203,12 @@ html {
     color: #fff;
     border-color: #2980b9;
   }
+  .download-link img {
+    transition: transform 0.3s;
+}
+.download-link:hover img {
+    transform: scale(1.2);
+}
+
+   
   

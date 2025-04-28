@@ -1,5 +1,5 @@
 /* === КНОПКИ === */
-button:not(.option-btn),
+button:not(.option-btn,.delete-btn,.logout-btn),
 .back-btn,
 .logout-btn,
 .delete-btn,
@@ -17,11 +17,12 @@ button:not(.option-btn),
     background-color: #3498db;
 }
 
-button:hover,
+button:hover:not(.delete-btn,.logout-btn),
 .complete-btn:hover,
 .tab-button:hover {
     background-color: #2980b9;
 }
+
 
 .back-btn {
     padding: 10px 20px;
@@ -47,10 +48,6 @@ button:hover,
     background-color: #e74c3c;
 }
 
-.logout-btn:hover,
-.delete-btn:hover {
-    background-color: #c0392b;
-}
 
 .tab-button {
     background-color: #3498db; /* блакитна звичайна кнопка */

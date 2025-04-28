@@ -42,68 +42,81 @@
       <button class="tab-button active" data-tab="tab-requests">Заявки</button>
       <button class="tab-button" data-tab="tab-users">Користувачі</button>
     </div>
-
     <!-- Вкладка Заявки -->
-    <div id="tab-requests" class="tab-content">
-      {% if requests %}
-        <div class="requests-table">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th><th>Ім’я</th><th>Email</th><th>Опис</th>
-                <th>Складність</th><th>Термін</th><th>Вартість</th>
-                <th>Дата дзвінка</th><th>Статус</th><th>Рейтинг</th><th>Дія</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for r in requests %}
-              <tr>
-                <td>{{ r['id'] }}</td>
-                <td>{{ r['name'] }}</td>
-                <td>{{ r['email'] }}</td>
-                <td>{{ r['description'] }}</td>
-                <td>{{ r['complexity'] }}</td>
-                <td>{{ r['estimated_time'] }}</td>
-                <td>${{ r['estimated_cost'] }}</td>
-                <td>{{ r['meeting_date'] }}</td>
-                <td>{{ r['status'] }}</td>
-                <td>
-                  {% if r['rating'] and r['rating'] > 0 %}
-                    {{ '★'*r['rating'] }}{{ '☆'*(5-r['rating']) }}
-                  {% else %}—{% endif %}
-                </td>
-                <td class="action-cell">
-                  {% if r['status'] != 'виконано' %}
-                    <button type="button" class="complete-btn">Заявка виконана</button>
-                    <form class="complete-form"
-                          method="post"
-                          action="{{ url_for('admin.complete_request', request_id=r['id']) }}">
-                      <div class="star-modal">
-                        <p>Оцініть клієнта:</p>
-                        {% for i in range(1,6) %}
-                          <span class="star" data-value="{{ i }}">☆</span>
-                        {% endfor %}
-                      </div>
-                    </form>
-                  {% else %}
-                    <button class="complete-btn" disabled>Виконано</button>
-                  {% endif %}
-                  <form method="post"
-                        action="{{ url_for('admin.delete_request', request_id=r['id']) }}"
-                        onsubmit="return confirm('Видалити цю заявку?');">
-                    <button type="submit" class="delete-btn">Видалити</button>
+<div id="tab-requests" class="tab-content">
+    {% if requests %}
+      <div class="requests-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Ім’я</th><th>Email</th><th>Опис</th>
+              <th>Складність</th><th>Термін</th><th>Вартість</th>
+              <th>Дата дзвінка</th><th>Статус</th><th>Рейтинг</th><th>Файл ТЗ</th><th>Дія</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for r in requests %}
+            <tr>
+              <td>{{ r['id'] }}</td>
+              <td>{{ r['name'] }}</td>
+              <td>{{ r['email'] }}</td>
+              <td>{{ r['description'] }}</td>
+              <td>{{ r['complexity'] }}</td>
+              <td>{{ r['estimated_time'] }}</td>
+              <td>${{ r['estimated_cost'] }}</td>
+              <td>{{ r['meeting_date'] }}</td>
+              <td>{{ r['status'] }}</td>
+              <td>
+                {% if r['rating'] and r['rating'] > 0 %}
+                  {{ '★'*r['rating'] }}{{ '☆'*(5-r['rating']) }}
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if r['file_path'] %}
+                    <a href="{{ url_for('static', filename='uploads/' + r['file_path']) }}" download>
+                    {% if r['file_path'].endswith('.pdf') %}
+                      <img src="{{ url_for('static', filename='img/pdf-icon.png') }}" alt="PDF" width="24">
+                    {% elif r['file_path'].endswith('.docx') %}
+                      <img src="{{ url_for('static', filename='img/docx-icon.png') }}" alt="DOCX" width="24">
+                    {% endif %}
+                  </a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="action-cell">
+                {% if r['status'] != 'виконано' %}
+                  <button type="button" class="complete-btn">Заявка виконана</button>
+                  <form class="complete-form"
+                        method="post"
+                        action="{{ url_for('admin.complete_request', request_id=r['id']) }}">
+                    <div class="star-modal">
+                      <p>Оцініть клієнта:</p>
+                      {% for i in range(1,6) %}
+                        <span class="star" data-value="{{ i }}">☆</span>
+                      {% endfor %}
+                    </div>
                   </form>
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% else %}
-        <p>Заявок поки що немає.</p>
-      {% endif %}
-    </div>
+                {% else %}
+                  <button class="complete-btn" disabled>Виконано</button>
+                {% endif %}
+                <form method="post"
+                      action="{{ url_for('admin.delete_request', request_id=r['id']) }}"
+                      onsubmit="return confirm('Видалити цю заявку?');">
+                  <button type="submit" class="delete-btn">Видалити</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>Заявок поки що немає.</p>
+    {% endif %}
+  </div>
 
+    
     <!-- Вкладка Користувачі -->
     <div id="tab-users" class="tab-content" style="display:none;">
       {% if users %}

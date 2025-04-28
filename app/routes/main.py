@@ -1,16 +1,22 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, send_from_directory
 from datetime import datetime, timedelta
 import sqlite3
 from flask_mail import Message
 from app import mail
 import os
+from werkzeug.utils import secure_filename
 
 bp = Blueprint('main', __name__)
+
+# Дозволені розширення файлів
+ALLOWED_EXTENSIONS = {'pdf', 'docx'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @bp.route('/')
 def home():
     return render_template('index.html')
-
 
 @bp.route('/request', methods=['GET', 'POST'])
 def request_form():
@@ -34,6 +40,7 @@ def request_form():
         description = request.form['description']
         complexity = request.form['complexity']
 
+        # Розрахунок часу і вартості
         if complexity == 'low':
             estimated_time = '1-2 дні'
             estimated_cost = 100
@@ -46,17 +53,29 @@ def request_form():
 
         meeting_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
 
-        # збереження заявки
+        # Завантаження файлу
+        uploaded_file = request.files.get('file_upload')
+        file_path = None
+
+        if uploaded_file and allowed_file(uploaded_file.filename):
+            filename = secure_filename(uploaded_file.filename)
+            uploads_dir = os.path.join('static', 'uploads')  # тепер uploads/ просто в корені
+            os.makedirs(uploads_dir, exist_ok=True)
+            saved_path = os.path.join(uploads_dir, filename)
+            uploaded_file.save(saved_path)
+            file_path = filename  # тільки ім'я файлу у базу
+
+        # Збереження в базу
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO requests (name, email, description, complexity, estimated_time, estimated_cost, meeting_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (name, email, description, complexity, estimated_time, estimated_cost, meeting_date))
+            INSERT INTO requests (name, email, description, complexity, estimated_time, estimated_cost, meeting_date, file_path)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, email, description, complexity, estimated_time, estimated_cost, meeting_date, file_path))
         conn.commit()
         conn.close()
 
-        # надсилання листа з підтвердженням
+        # Відправка листа
         try:
             msg = Message(
                 "Підтвердження заявки",
@@ -89,3 +108,8 @@ IT-компанія
         )
 
     return render_template('request.html', user_name=user_name, user_email=user_email)
+
+# ➡️ Додаємо новий маршрут для скачування файлу
+@bp.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(os.path.join('static', 'uploads'), filename, as_attachment=True)
