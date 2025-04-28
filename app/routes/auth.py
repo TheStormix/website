@@ -1,12 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, session, flash, url_for
+from flask import Blueprint, render_template, request, redirect, session, flash, url_for,jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import random
 import string
-import smtplib
-from email.mime.text import MIMEText
-from app import mail
 from flask_mail import Message
+from app import mail
 
 bp = Blueprint('auth', __name__)
 
@@ -24,19 +22,16 @@ def register():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
 
-        # Зберігаємо тимчасово дані в сесії
         session['temp_username'] = username
         session['temp_email'] = email
         session['temp_password'] = password
 
-        # Генеруємо код підтвердження
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         session['confirmation_code'] = code
 
-        # Відправляємо код на email
         try:
             send_confirmation_email(email, code)
-        except Exception as e:
+        except Exception:
             flash("Не вдалося надіслати email з кодом. Спробуйте пізніше.", "error")
             return redirect(url_for('auth.register'))
 
@@ -59,7 +54,6 @@ def confirm_code():
                 flash("Сталася помилка. Будь ласка, зареєструйтесь знову.", "error")
                 return redirect(url_for('auth.register'))
 
-            # Записуємо нового користувача в базу
             conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
             try:
@@ -73,18 +67,32 @@ def confirm_code():
                 return redirect(url_for('auth.register'))
             conn.close()
 
-            # Логін користувача
             session['user_id'] = user_id
             session['username'] = username
 
             flash("Реєстрація успішна!", "success")
             return redirect(url_for('user.profile'))
-
         else:
             flash("Невірний код підтвердження. Спробуйте ще раз.", "error")
             return redirect(url_for('auth.confirm_code'))
 
     return render_template('confirm_code.html')
+
+@bp.route('/resend_code', methods=['POST'])
+def resend_code():
+    email = session.get('temp_email')
+    if not email:
+        return jsonify({'status': 'error', 'message': 'Неможливо надіслати код. Спробуйте зареєструватися знову.'}), 400
+
+    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    session['confirmation_code'] = code
+
+    try:
+        send_confirmation_email(email, code)
+        return jsonify({'status': 'success', 'message': 'Код підтвердження надіслано повторно.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': 'Не вдалося повторно надіслати код. Спробуйте пізніше.'}), 500
+
 
 @bp.route('/user-login', methods=['GET', 'POST'])
 def user_login():

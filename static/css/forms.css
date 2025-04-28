@@ -96,3 +96,7 @@ textarea[readonly]:focus {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     overflow-x: auto; /* Тільки якщо контент буде дуже великий */
 }
+.disabled-btn {
+    background-color: #ccc !important;
+    cursor: not-allowed !important;
+}

@@ -27,7 +27,14 @@
         <label for="code">Введіть код підтвердження, який надійшов на вашу пошту:</label>
         <input type="text" name="code" id="code" placeholder="Наприклад: 4F7G2B" required>
 
-        <button type="submit" class="btn-primary">Підтвердити</button>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="submit" class="btn-primary">Підтвердити</button>
+
+            <!-- Кнопка надсилання коду -->
+            <button type="button" id="resend-btn" class="btn-primary" disabled style="background-color: #ccc; cursor: not-allowed;">
+                Надіслати код повторно (60)
+            </button>
+        </div>
     </form>
 
     <p style="text-align: center; margin-top: 20px;">
@@ -35,5 +42,7 @@
     </p>
 </div>
 
+
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>
