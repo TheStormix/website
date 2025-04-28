@@ -46,4 +46,45 @@ textarea[readonly]:focus {
     outline: none;
     box-shadow: none;
 }
-
+.login-choice {
+    text-align: center;
+    padding: 40px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 500px;
+  }
+  
+  .login-choice h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  
+  .login-choice p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 30px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .btn-light {
+    background-color: #ecf0f1;
+    color: #3498db;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .btn-light:hover {
+    background-color: #d0d7dc;
+  }
+  

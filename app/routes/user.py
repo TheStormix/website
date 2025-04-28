@@ -44,7 +44,7 @@ def profile():
             cursor.execute("UPDATE users SET password=? WHERE id=?", (hashed_password, user_id))
             flash("✅ Пароль успішно змінено!", "success")
 
-        # Зміна дати народження
+        # Перевірка зміни дати народження
         if new_birthdate:
             cursor.execute("UPDATE users SET birthdate=? WHERE id=?", (new_birthdate, user_id))
             flash("✅ Дату народження оновлено!", "success")
@@ -53,7 +53,7 @@ def profile():
         conn.close()
         return redirect(url_for('user.profile'))
 
-    # Отримання заявок користувача з полем status
+    # Отримання заявок користувача
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     cursor.execute(
@@ -64,14 +64,19 @@ def profile():
     user_requests = cursor.fetchall()
     conn.close()
 
+    # ➡️ Підрахунок заявок:
+    total_requests = len(user_requests)
+    active_requests = sum(1 for r in user_requests if r[5] != 'виконано')
+
     return render_template(
         'profile.html',
         username=username,
         email=email,
         birthdate=birthdate,
-        requests=user_requests
+        requests=user_requests,
+        active_requests=active_requests,
+        total_requests=total_requests
     )
-
 
 def get_user_info(user_id):
     conn = sqlite3.connect('database.db')

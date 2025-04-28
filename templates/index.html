@@ -127,16 +127,8 @@
     </div>
   </footer>
 
-  <script>
-    function toggleMenu() {
-      document.getElementById("dropdown").classList.toggle("show");
-    }
-    window.addEventListener('click', function(event) {
-      if (!event.target.closest('.profile-menu')) {
-        document.getElementById("dropdown").classList.remove('show');
-      }
-    });
-  </script>
+  
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
 </body>
 </html>

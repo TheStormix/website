@@ -14,7 +14,6 @@
 </head>
 <body>
 
-<!-- HERO SECTION -->
 <div class="hero request-hero">
   <div class="hero-content">
     <h1>Залишити заявку</h1>
@@ -23,25 +22,24 @@
   </div>
 </div>
 
-<!-- ACTUAL FORM -->
 <div id="request-form" class="form-container">
   <p><a href="{{ url_for('main.home') }}" class="back-btn">← На головну</a></p>
 
-  <div id="user_choice" {% if session.get('user_id') %}style="display:none"{% endif %}>
-    <p><strong>Ви новий користувач чи вже маєте акаунт?</strong></p>
-    <button type="button" onclick="showForm('new')">Новий (без реєстрації)</button>
-    <button type="button" onclick="showForm('existing')">Вже маю акаунт</button>
+  <div id="user_choice" class="login-choice" {% if session.get('user_id') %}style="display:none"{% endif %}>
+    <h2>Вкажіть, як продовжити</h2>
+    <p>Щоб залишити заявку, оберіть свій варіант:</p>
+    <div class="button-group">
+      <button type="button" class="btn-light" onclick="showForm('new')">Новий користувач</button>
+      <button type="button" class="btn-primary" onclick="showForm('existing')">Вже маю акаунт</button>
+    </div>
   </div>
 
   <div id="new_user_form" {% if session.get('user_id') %}style="display:block"{% else %}style="display:none"{% endif %}>
     <form method="post" enctype="multipart/form-data" oninput="calculateComplexity()">
-
       <label>Ім'я:</label>
       <input type="text" name="name" value="{{ user_name or '' }}" {% if user_name %}readonly tabindex="-1"{% endif %} required>
-
       <label>Email:</label>
       <input type="email" name="email" value="{{ user_email or '' }}" {% if user_email %}readonly tabindex="-1"{% endif %} required>
-
       <label>Тип продукту:</label>
       <select name="product_type" id="product_type" onchange="showOptions()" required>
         <option value="">-- Оберіть --</option>
@@ -50,7 +48,6 @@
         <option value="bot">Telegram-бот</option>
       </select>
 
-      <!-- Тип сайту -->
       <div id="site_type_block" style="display:none;">
         <label>Тип сайту:</label>
         <select id="site_type" name="site_type">
@@ -61,14 +58,12 @@
         </select>
       </div>
 
-      <!-- Website options -->
       <div id="website_options" style="display:none;">
         <label>Кількість сторінок:</label>
         <select id="pages" name="pages">
           <option value="1-2">1-2</option>
           <option value="3+">3+</option>
         </select>
-
         <label>Додаткові функції:</label>
         <div class="option-buttons">
           <button type="button" class="option-btn" data-target="admin_panel">Адмінпанель</button>
@@ -78,7 +73,6 @@
         <input type="hidden" id="auth" name="auth" value="0">
       </div>
 
-      <!-- App options -->
       <div id="app_options" style="display:none;">
         <label>Платформа:</label>
         <select id="platform" name="platform">
@@ -86,7 +80,6 @@
           <option value="ios">iOS</option>
           <option value="both">Android + iOS</option>
         </select>
-
         <label>Додаткові функції:</label>
         <div class="option-buttons">
           <button type="button" class="option-btn" data-target="login">Вхід у систему</button>
@@ -96,14 +89,12 @@
         <input type="hidden" id="user_profile" name="user_profile" value="0">
       </div>
 
-      <!-- Bot options -->
       <div id="bot_options" style="display:none;">
         <label>Кількість команд:</label>
         <select id="bot_commands" name="bot_commands">
           <option value="few">1-3</option>
           <option value="many">4+</option>
         </select>
-
         <label>Додаткові функції:</label>
         <div class="option-buttons">
           <button type="button" class="option-btn" data-target="bot_database">Інтеграція з базою даних</button>
@@ -120,7 +111,7 @@
 
       <label>Прикріпити файл ТЗ (pdf, doc, docx, txt):</label>
       <input type="file" id="file_upload" name="file_upload" accept=".pdf,.doc,.docx,.txt">
-      <!-- Бажаний час зв'язку -->
+
       <label>Коли з вами найкраще зв'язатися?</label>
       <select name="contact_time">
         <option value="">-- Оберіть --</option>
@@ -142,79 +133,7 @@
   </div>
 </div>
 
-<script>
-  function showForm(type) {
-    document.getElementById('user_choice').style.display = 'none';
-    document.getElementById('new_user_form').style.display = (type==='new') ? 'block' : 'none';
-    document.getElementById('login_form').style.display = (type==='existing') ? 'block' : 'none';
-  }
-
-  function showOptions() {
-    const t = document.getElementById('product_type').value;
-    document.getElementById('website_options').style.display = t==='website' ? 'block' : 'none';
-    document.getElementById('app_options').style.display = t==='app' ? 'block' : 'none';
-    document.getElementById('bot_options').style.display = t==='bot' ? 'block' : 'none';
-    document.getElementById('site_type_block').style.display = t==='website' ? 'block' : 'none';
-    if (t !== 'website') {
-      document.getElementById('site_type').value = '';
-    }
-    calculateComplexity();
-  }
-
-  function calculateComplexity() {
-    let score = 0, t = document.getElementById('product_type').value;
-    if (t==='website') {
-      if (document.getElementById('pages').value==='3+') score +=2;
-      if (document.getElementById('admin_panel').value==='1') score +=2;
-      if (document.getElementById('auth').value==='1') score +=1;
-    }
-    if (t==='app') {
-      if (document.getElementById('platform').value==='both') score +=2;
-      if (document.getElementById('login').value==='1') score +=1;
-      if (document.getElementById('user_profile').value==='1') score +=2;
-    }
-    if (t==='bot') {
-      if (document.getElementById('bot_commands').value==='many') score +=2;
-      if (document.getElementById('bot_payments').value==='1') score +=2;
-      if (document.getElementById('bot_database').value==='1') score +=1;
-    }
-    let c = 'low';
-    if (score>=3 && score<5) c='medium';
-    if (score>=5) c='high';
-    document.getElementById('complexity').value = c;
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.option-btn').forEach(button => {
-      button.addEventListener('click', () => {
-        const targetId = button.getAttribute('data-target');
-        const input = document.getElementById(targetId);
-        if (button.classList.contains('active')) {
-          button.classList.remove('active');
-          input.value = "0";
-        } else {
-          button.classList.add('active');
-          input.value = "1";
-        }
-        calculateComplexity();
-      });
-    });
-
-    document.querySelectorAll('input[readonly]').forEach(input => {
-      input.addEventListener('focus', (e) => {
-        e.target.blur();
-      });
-    });
-
-    document.getElementById('file_upload').addEventListener('change', function() {
-      const file = this.files[0];
-      if (file && file.size > 5 * 1024 * 1024) {
-        alert('Файл занадто великий. Максимальний розмір файлу 5 МБ.');
-        this.value = '';
-      }
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
 </body>
 </html>
