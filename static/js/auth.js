@@ -105,3 +105,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+setTimeout(() => {
+    const flashMessages = document.querySelectorAll('.flash-messages li');
+    flashMessages.forEach(msg => {
+        msg.classList.add('fade-out'); // Спочатку додаємо клас для анімації
+        setTimeout(() => {
+            msg.remove(); // А вже через 0.5s видаляємо елемент
+        }, 500); // Час повинен бути такий самий як в transition: 0.5s у CSS
+    });
+}, 4000); // Початок після 4 секунд

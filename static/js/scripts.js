@@ -75,4 +75,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (score >= 5) c = 'high';
     document.getElementById('complexity').value = c;
   }
-  
+  document.addEventListener('DOMContentLoaded', function() {
+    const optionButtons = document.querySelectorAll('.option-btn');
+
+    optionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            button.classList.toggle('active');
+        });
+    });
+});

@@ -22,16 +22,30 @@ def register():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
 
+        # 🔥 Перевірка чи email вже існує
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT id FROM users WHERE email=?', (email,))
+        existing_user = cursor.fetchone()
+        conn.close()
+
+        if existing_user:
+            flash("Користувач із таким email вже зареєстрований.", "error")
+            return redirect(url_for('auth.register'))
+
+        # Зберігаємо тимчасово дані в сесії
         session['temp_username'] = username
         session['temp_email'] = email
         session['temp_password'] = password
 
+        # Генеруємо код підтвердження
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         session['confirmation_code'] = code
 
+        # Відправляємо код на email
         try:
             send_confirmation_email(email, code)
-        except Exception:
+        except Exception as e:
             flash("Не вдалося надіслати email з кодом. Спробуйте пізніше.", "error")
             return redirect(url_for('auth.register'))
 
@@ -39,6 +53,7 @@ def register():
         return redirect(url_for('auth.confirm_code'))
 
     return render_template('register.html')
+
 
 @bp.route('/confirm_code', methods=['GET', 'POST'])
 def confirm_code():
