@@ -1,5 +1,5 @@
 /* === ФОРМИ === */
-form, .tab-content, .confirmation {
+form,  .confirmation {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
@@ -87,4 +87,12 @@ textarea[readonly]:focus {
   .btn-light:hover {
     background-color: #d0d7dc;
   }
-  
+  .tab-content {
+    max-width: 1400px; /* Було або взагалі не було обмеження */
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Тільки якщо контент буде дуже великий */
+}

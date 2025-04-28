@@ -1,8 +1,21 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+import random
+import string
+import smtplib
+from email.mime.text import MIMEText
+from app import mail
+from flask_mail import Message
 
 bp = Blueprint('auth', __name__)
+
+def send_confirmation_email(email, code):
+    subject = "Код підтвердження реєстрації"
+    body = f"Ваш код підтвердження: {code}"
+
+    msg = Message(subject=subject, recipients=[email], body=body)
+    mail.send(msg)
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -11,20 +24,67 @@ def register():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
 
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
+        # Зберігаємо тимчасово дані в сесії
+        session['temp_username'] = username
+        session['temp_email'] = email
+        session['temp_password'] = password
+
+        # Генеруємо код підтвердження
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        session['confirmation_code'] = code
+
+        # Відправляємо код на email
         try:
-            cursor.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-                           (username, email, password))
-            conn.commit()
-        except sqlite3.IntegrityError:
-            conn.close()
-            flash("Користувач з таким email вже існує", "error")
+            send_confirmation_email(email, code)
+        except Exception as e:
+            flash("Не вдалося надіслати email з кодом. Спробуйте пізніше.", "error")
             return redirect(url_for('auth.register'))
-        conn.close()
-        return redirect(url_for('auth.user_login'))
-    
+
+        flash("На вашу пошту надіслано код підтвердження.", "info")
+        return redirect(url_for('auth.confirm_code'))
+
     return render_template('register.html')
+
+@bp.route('/confirm_code', methods=['GET', 'POST'])
+def confirm_code():
+    if request.method == 'POST':
+        entered_code = request.form.get('code')
+
+        if entered_code == session.get('confirmation_code'):
+            username = session.pop('temp_username', None)
+            email = session.pop('temp_email', None)
+            password = session.pop('temp_password', None)
+
+            if not all([username, email, password]):
+                flash("Сталася помилка. Будь ласка, зареєструйтесь знову.", "error")
+                return redirect(url_for('auth.register'))
+
+            # Записуємо нового користувача в базу
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            try:
+                cursor.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+                               (username, email, password))
+                conn.commit()
+                user_id = cursor.lastrowid
+            except sqlite3.IntegrityError:
+                conn.close()
+                flash("Користувач з таким email вже існує", "error")
+                return redirect(url_for('auth.register'))
+            conn.close()
+
+            # Логін користувача
+            session['user_id'] = user_id
+            session['username'] = username
+
+            flash("Реєстрація успішна!", "success")
+            return redirect(url_for('user.profile'))
+
+        else:
+            flash("Невірний код підтвердження. Спробуйте ще раз.", "error")
+            return redirect(url_for('auth.confirm_code'))
+
+    return render_template('confirm_code.html')
 
 @bp.route('/user-login', methods=['GET', 'POST'])
 def user_login():
@@ -33,7 +93,7 @@ def user_login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        next_page = request.form.get('next')  # Щоб витягнути next після POST
+        next_page = request.form.get('next')
 
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()

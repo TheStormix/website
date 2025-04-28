@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Підтвердження реєстрації</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash-messages.css') }}">
+</head>
+<body>
+
+<div class="form-container">
+    <h1>Підтвердження реєстрації</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label for="code">Введіть код підтвердження, який надійшов на вашу пошту:</label>
+        <input type="text" name="code" id="code" placeholder="Наприклад: 4F7G2B" required>
+
+        <button type="submit" class="btn-primary">Підтвердити</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('auth.register') }}" class="back-btn">← Назад до реєстрації</a>
+    </p>
+</div>
+
+</body>
+</html>

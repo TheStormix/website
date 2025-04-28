@@ -1,8 +1,41 @@
 /* === ТАБЛИЦІ === */
 .requests-table {
-    margin-top: 30px;
-    overflow-x: auto;
+    overflow-x: auto; /* дозволити скрол якщо треба */
+    width: 100%;
 }
+
+.requests-table table {
+    width: 100%;
+    min-width: 1000px; /* мінімальна ширина таблиці */
+    border-collapse: collapse;
+    table-layout: auto; /* важливо */
+}
+
+.requests-table th, .requests-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    white-space: nowrap; /* не ламати слова в загальному */
+}
+
+.requests-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.requests-table td {
+    word-wrap: break-word;
+    white-space: normal; /* дозволити перенос тексту для td */
+}
+
+/* Дозволити конкретним стовпцям ламати рядки */
+.requests-table td:nth-child(3), /* Email */
+.requests-table td:nth-child(4)  /* Опис */ {
+    white-space: normal;
+    max-width: 200px;
+}
+  
+  
 table {
     width: 100%;
     border-collapse: collapse;
@@ -32,3 +65,4 @@ th.sorted-asc::after {
 th.sorted-desc::after {
     content: '▼';
 }
+
