@@ -2,28 +2,51 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Підтвердження</title>
+    <title>Заявку прийнято</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile-menu.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash-messages.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash-messages.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/confirmation.css') }}">
 </head>
 <body>
-    <div class="confirmation">
-        <h2>Дякуємо, {{ name }}!</h2>
-        <p>Складність проєкту: {{ complexity }}</p>
-        <p>Приблизний час виконання: {{ estimated_time }}</p>
-        <p>Оцінка вартості: ${{ estimated_cost }}</p>
-        <p>Очікуйте дзвінка від представника {{ meeting_date }}</p>
+    <div class="confirmation-card">
+        <!-- Початковий етап: Завантаження -->
+        <div class="confirmation-container">
+            <img id="status-icon" src="{{ url_for('static', filename='img/loading.gif') }}" alt="processing" />
+            <h2 id="status-title">Обробка заявки...</h2>
+            <p id="status-text">Збереження заявки...</p>
+        </div>
+        
+        <div id="final-content" style="display: none;">
+            <img id="status-icon" src="{{ url_for('static', filename='img/success-icon.png') }}" alt="успіх" />
+            <h2>Успішно!</h2>
+            <p>На вашу пошту надіслано підтвердження.</p>
+        
+            <h3>Дякуємо, {{ name }}!</h3>
+            <p>Ми успішно отримали вашу заявку.</p>
+        
+            <div class="details">
+                <p><strong>Складність проєкту:</strong> {{ complexity }}</p>
+                <p><strong>Оцінка часу виконання:</strong> {{ estimated_time }}</p>
+                <p><strong>Оцінка вартості:</strong> {{ estimated_cost }} грн</p>
+                <p><strong>Очікуйте дзвінка:</strong> {{ meeting_date }}</p>
+            </div>
+        
+            <div class="button-group">
+                <a href="{{ url_for('main.home') }}">
+                    <button class="btn-primary">⬅ На головну</button>
+                </a>
+        
+                {% if session.get('user_id') %}
+                <a href="{{ url_for('user.profile') }}">
+                    <button class="btn-primary">📄 Мої заявки</button>
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    <a href="{{ url_for('main.home') }}">
-        <button type="button" style="margin-top: 20px;">⬅️ На головну</button>
-    </a>
-    
+
+    <script src="{{ url_for('static', filename='js/confirmation.js') }}"></script>
 </body>
 </html>
