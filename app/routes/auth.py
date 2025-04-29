@@ -141,3 +141,45 @@ def user_login():
 def logout():
     session.clear()
     return redirect(url_for('main.home'))
+
+@bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email'].strip().lower()
+
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT id FROM users WHERE email=?', (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            conn.close()
+            flash("Користувача з таким email не знайдено.", "error")
+            return redirect(url_for('auth.forgot_password'))
+
+        # Генеруємо новий пароль
+        new_password = ''.join(random.choices(string.ascii_letters, k=8))
+        hashed_password = generate_password_hash(new_password)
+
+        # Оновлення в базі
+        cursor.execute('UPDATE users SET password=? WHERE email=?', (hashed_password, email))
+        conn.commit()
+        conn.close()
+
+        # Надсилаємо новий пароль
+        try:
+            send_new_password(email, new_password)
+            flash("Новий пароль надіслано на вашу пошту.", "success")
+        except Exception:
+            flash("Не вдалося надіслати email. Спробуйте пізніше.", "error")
+
+        return redirect(url_for('auth.user_login'))
+
+    return render_template('forgot_password.html')
+
+def send_new_password(email, new_password):
+    subject = "Ваш новий пароль"
+    body = f"Ваш новий пароль: {new_password}\n\nРекомендуємо змінити його після входу в особистому кабінеті."
+
+    msg = Message(subject=subject, recipients=[email], body=body)
+    mail.send(msg)

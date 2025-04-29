@@ -33,6 +33,9 @@
         <input type="password" name="password" required><br><br>
         <button type="submit">Увійти</button>
     </form>
+    <p style="text-align: center; margin-top: 10px;">
+        <a href="{{ url_for('auth.forgot_password') }}" class="back-btn">Забули пароль?</a>
+    </p>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     
     
