@@ -35,7 +35,6 @@ def admin_panel():
         ORDER BY id DESC
     ''').fetchall()
 
-
     # 2) Унікальні "користувачі" з таблиці requests,
     #    з підрахунком кількості заявок і середнім рейтингом
     users = conn.execute('''
@@ -49,8 +48,33 @@ def admin_panel():
         ORDER BY total_requests DESC, avg_rating DESC
     ''').fetchall()
 
+    # 3) Статистика типів продуктів
+    stats_raw = conn.execute('''
+        SELECT product_type, COUNT(*) as count
+        FROM requests
+        GROUP BY product_type
+    ''').fetchall()
+
+    # 4) Статистика складності
+    complexity_raw = conn.execute('''
+        SELECT complexity, COUNT(*) as count
+        FROM requests
+        GROUP BY complexity
+    ''').fetchall()
+
     conn.close()
-    return render_template('admin.html', requests=reqs, users=users)
+
+    # Конвертуємо об'єкти Row у словники, щоб їх можна було серіалізувати
+    stats = [dict(row) for row in stats_raw]
+    complexity_stats = [dict(row) for row in complexity_raw]
+
+    return render_template(
+        'admin.html',
+        requests=reqs,
+        users=users,
+        stats=stats,
+        complexity_stats=complexity_stats
+    )
 
 @bp.route('/request/<int:request_id>/status', methods=['POST'])
 def change_status(request_id):

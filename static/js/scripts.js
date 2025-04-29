@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
  
   // === Логіка вибору типу продукту і розрахунку складності (request.html) ===
-  function showForm(type) {
+function showForm(type) {
     document.getElementById('user_choice').style.display = 'none';
     document.getElementById('new_user_form').style.display = (type === 'new') ? 'block' : 'none';
     document.getElementById('login_form').style.display = (type === 'existing') ? 'block' : 'none';
@@ -75,15 +75,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (score >= 5) c = 'high';
     document.getElementById('complexity').value = c;
   }
-  document.addEventListener('DOMContentLoaded', function() {
+  
+  document.addEventListener('DOMContentLoaded', function () {
     const optionButtons = document.querySelectorAll('.option-btn');
-
+  
     optionButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('active');
-        });
+      button.addEventListener('click', () => {
+        button.classList.toggle('active');
+        const targetId = button.dataset.target;
+        const targetInput = document.getElementById(targetId);
+        if (targetInput) {
+          const newValue = targetInput.value === '1' ? '0' : '1';
+          targetInput.value = newValue;
+          calculateComplexity();
+        }
+      });
     });
-});
+  });
 // scripts.js (додатковий код для multi-step форми)
 
 

@@ -37,6 +37,7 @@ def request_form():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
+        product_type = request.form.get('product_type')
         description = request.form['description']
         complexity = request.form['complexity']
 
@@ -59,19 +60,19 @@ def request_form():
 
         if uploaded_file and allowed_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
-            uploads_dir = os.path.join('static', 'uploads')  # тепер uploads/ просто в корені
+            uploads_dir = os.path.join('static', 'uploads')
             os.makedirs(uploads_dir, exist_ok=True)
             saved_path = os.path.join(uploads_dir, filename)
             uploaded_file.save(saved_path)
-            file_path = filename  # тільки ім'я файлу у базу
+            file_path = filename
 
         # Збереження в базу
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO requests (name, email, description, complexity, estimated_time, estimated_cost, meeting_date, file_path)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (name, email, description, complexity, estimated_time, estimated_cost, meeting_date, file_path))
+            INSERT INTO requests (name, email, product_type, description, complexity, estimated_time, estimated_cost, meeting_date, file_path)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, email, product_type, description, complexity, estimated_time, estimated_cost, meeting_date, file_path))
         conn.commit()
         conn.close()
 
