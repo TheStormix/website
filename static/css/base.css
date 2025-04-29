@@ -209,6 +209,12 @@ html {
 .download-link:hover img {
     transform: scale(1.2);
 }
-
-   
+.form-step { display: none; }
+.form-step.active { display: block; }
+.step-buttons { margin-top: 20px; display: flex; justify-content: space-between; }
+    input[readonly] {
+      pointer-events: none;
+      background-color: #f1f1f1;
+      color: #888;
+    }
   

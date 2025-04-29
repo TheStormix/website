@@ -100,3 +100,35 @@ textarea[readonly]:focus {
     background-color: #ccc !important;
     cursor: not-allowed !important;
 }
+.preview-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .preview-card h3 {
+    margin-top: 0;
+    color: #2a7ae2;
+  }
+  .preview-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+  }
+  .preview-item span {
+    font-size: 1.2em;
+    margin-right: 8px;
+  }
+  .preview-badges {
+    margin-top: 5px;
+  }
+  .preview-badge {
+    display: inline-block;
+    background-color: #2a7ae2;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    margin-right: 5px;
+  }
