@@ -132,3 +132,31 @@ textarea[readonly]:focus {
     font-size: 0.9em;
     margin-right: 5px;
   }
+  .preview-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  
+  
+  .preview-badge {
+    background-color: #f6f8fa;
+    color: #333;
+    border: 1px solid #d0d7de;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: background-color 0.2s ease;
+  }
+.preview-card {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+.preview-badge:hover {
+    background-color: #e2e8f0;
+  }

@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
 </head>
 <body>
-    <h2>Вхід в особистий кабінет</h2>
+    <div class="page-title">
+        <h1>Вхід в особистий кабінет</h1>
+    </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}

@@ -14,15 +14,16 @@
 </head>
 <body>
   <div class="admin-wrapper">
-    <h2>Адмін-панель</h2>
+    
 
     <div class="action-buttons">
       <a href="{{ url_for('main.home') }}">
         <button class="back-btn">← Назад на головну</button>
       </a>
-      <a href="{{ url_for('admin.admin_logout') }}">
-        <button class="logout-btn">Вийти</button>
-      </a>
+      
+    </div>
+    <div class="page-title">
+        <h1>Адмін-панель</h1>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -156,6 +157,11 @@
             <canvas id="complexityChart"width="350" height="300"></canvas>
           </div>
         </div>
+    </div>
+    <div class="logout-wrapper">
+        <a href="{{ url_for('admin.admin_logout') }}">
+          <button class="logout-btn">Вийти</button>
+        </a>
     </div>
 
    

@@ -217,4 +217,29 @@ html {
       background-color: #f1f1f1;
       color: #888;
     }
-  
+.page-title {
+  text-align: center;
+  margin: 50px auto 30px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.page-title h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #007BFF, #00C6FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+  letter-spacing: 1px;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

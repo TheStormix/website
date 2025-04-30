@@ -5,6 +5,7 @@ button:not(.option-btn,.delete-btn,.logout-btn),
 .delete-btn,
 .complete-btn,
 .tab-button {
+    
     padding: 8px 16px;
     font-size: 14px;
     border: none;
@@ -17,8 +18,7 @@ button:not(.option-btn,.delete-btn,.logout-btn),
     background-color: #3498db;
 }
 
-button:hover:not(.delete-btn,.logout-btn),
-.complete-btn:hover,
+button:hover:not(.delete-btn,.logout-btn,.complete-btn),
 .tab-button:hover {
     background-color: #2980b9;
 }
@@ -43,9 +43,29 @@ button:hover:not(.delete-btn,.logout-btn),
     transform: scale(1.05);
 }
 
-.logout-btn,
+.logout-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .logout-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+  .logout-btn:hover {
+    background-color: #c0392b;
+  }
 .delete-btn {
     background-color: #e74c3c;
+    text-align: center;
+    
 }
 
 
