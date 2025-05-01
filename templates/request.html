@@ -1,9 +1,8 @@
-<!-- ОНОВЛЕНИЙ request.html -->
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
   <meta charset="UTF-8">
-  <title>Залишити заявку</title>
+  <title>{{ t['request']['title'] }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
@@ -22,94 +21,93 @@
 
 <div class="hero request-hero">
   <div class="hero-content">
-    <h1>Залишити заявку</h1>
-    <p>Отримайте безкоштовну консультацію та орієнтовну оцінку проєкту за 24 години</p>
-    <a href="#request-form"><button class="btn-primary">Перейти до форми</button></a>
+    <h1>{{ t['request']['title'] }}</h1>
+    <p>{{ t['request']['subtitle'] }}</p>
+    <a href="#request-form"><button class="btn-primary">{{ t['request']['to_form'] }}</button></a>
   </div>
 </div>
 
 <div id="request-form" class="form-container">
-  <p><a href="{{ url_for('main.home') }}" class="back-btn">← На головну</a></p>
+  <p><a href="{{ url_for('main.home') }}" class="back-btn">{{ t['request']['back'] }}</a></p>
 
   <div id="user_choice" class="login-choice" {% if session.get('user_id') %}style="display:none"{% endif %}>
-    <h2>Вкажіть, як продовжити</h2>
-    <p>Щоб залишити заявку, оберіть свій варіант:</p>
+    <h2>{{ t['request']['choose_mode'] }}</h2>
+    <p>{{ t['request']['choose_hint'] }}</p>
     <div class="button-group">
-      <button type="button" class="btn-light" onclick="showForm('new')">Новий користувач</button>
-      <button type="button" class="btn-primary" onclick="showForm('existing')">Вже маю акаунт</button>
+      <button type="button" class="btn-light" onclick="showForm('new')">{{ t['request']['new_user'] }}</button>
+      <button type="button" class="btn-primary" onclick="showForm('existing')">{{ t['request']['existing_user'] }}</button>
     </div>
   </div>
 
   <div id="new_user_form" {% if session.get('user_id') %}style="display:block"{% else %}style="display:none"{% endif %}>
     <form id="requestForm" method="post" enctype="multipart/form-data" oninput="calculateComplexity()">
-      <!-- Кроки форми -->
       <div class="form-step active" id="step-1">
-        <label>Ім'я:</label>
-        <input type="text" name="name" value="{{ user_name or '' }}" {% if user_name %}readonly tabindex="-1"{% endif %} placeholder="Ваше ім'я" required>
-        <label>Email:</label>
-        <input type="email" name="email" value="{{ user_email or '' }}" {% if user_email %}readonly tabindex="-1"{% endif %} placeholder="example@email.com" required>
+        <label>{{ t['request']['name'] }}:</label>
+        <input type="text" name="name" value="{{ user_name or '' }}" {% if user_name %}readonly tabindex="-1"{% endif %} placeholder="{{ t['request']['name'] }}" required>
+        <label>{{ t['request']['email'] }}:</label>
+        <input type="email" name="email" value="{{ user_email or '' }}" {% if user_email %}readonly tabindex="-1"{% endif %} placeholder="{{ t['request']['email'] }}" required>
       </div>
 
       <div class="form-step" id="step-2">
-        <label>Тип продукту:</label>
+        <label>{{ t['request']['product_type'] }}:</label>
         <select name="product_type" id="product_type" onchange="showOptions()" required>
-          <option value="">-- Оберіть --</option>
-          <option value="website">Веб-сайт</option>
-          <option value="app">Мобільний додаток</option>
-          <option value="bot">Telegram-бот</option>
+          <option value="">{{ t['request']['product_type_placeholder'] }}</option>
+          <option value="website">{{ t['request']['type_website'] }}</option>
+          <option value="app">{{ t['request']['type_app'] }}</option>
+          <option value="bot">{{ t['request']['type_bot'] }}</option>
         </select>
 
         <div id="site_type_block" style="display:none;">
-          <label>Тип сайту:</label>
+          <label>{{ t['request']['site_type'] }}</label>
           <select id="site_type" name="site_type">
-            <option value="">-- Оберіть тип сайту --</option>
-            <option value="landing">Лендінг</option>
-            <option value="ecommerce">Інтернет-магазин</option>
-            <option value="corporate">Корпоративний сайт</option>
+            <option value="">{{ t['request']['site_type_placeholder'] }}</option>
+            <option value="landing">{{ t['request']['landing'] }}</option>
+            <option value="ecommerce">{{ t['request']['ecommerce'] }}</option>
+            <option value="corporate">{{ t['request']['corporate'] }}</option>
           </select>
         </div>
 
         <div id="website_options" style="display:none;">
-          <label>Кількість сторінок:</label>
+          <label>{{ t['request']['pages'] }}:</label>
           <select id="pages" name="pages">
             <option value="1-2">1-2</option>
             <option value="3+">3+</option>
           </select>
-          <label>Додаткові функції:</label>
+          <label>{{ t['request']['extra_features'] }}:</label>
           <div class="option-buttons">
-            <button type="button" class="option-btn" data-target="admin_panel">Адмінпанель</button>
-            <button type="button" class="option-btn" data-target="auth">Авторизація</button>
+            <button type="button" class="option-btn" data-target="admin_panel">{{ t['request']['admin_panel'] }}</button>
+            <button type="button" class="option-btn" data-target="auth">{{ t['request']['auth'] }}</button>
           </div>
           <input type="hidden" id="admin_panel" name="admin_panel" value="0">
           <input type="hidden" id="auth" name="auth" value="0">
         </div>
 
         <div id="app_options" style="display:none;">
-          <label>Платформа:</label>
+          <label>{{ t['request']['platform'] }}:</label>
           <select id="platform" name="platform">
             <option value="android">Android</option>
             <option value="ios">iOS</option>
             <option value="both">Android + iOS</option>
           </select>
-          <label>Додаткові функції:</label>
+          <label>{{ t['request']['extra_features'] }}:</label>
           <div class="option-buttons">
-            <button type="button" class="option-btn" data-target="login">Вхід у систему</button>
-            <button type="button" class="option-btn" data-target="user_profile">Профіль користувача</button>
+            <button type="button" class="option-btn" data-target="login">{{ t['request']['login'] }}</button>
+            <button type="button" class="option-btn" data-target="user_profile">{{ t['request']['user_profile'] }}</button>
           </div>
           <input type="hidden" id="login" name="login" value="0">
           <input type="hidden" id="user_profile" name="user_profile" value="0">
         </div>
 
         <div id="bot_options" style="display:none;">
-          <label>Кількість команд:</label>
+          <label>{{ t['request']['bot_commands'] }}:</label>
           <select id="bot_commands" name="bot_commands">
             <option value="few">1-3</option>
             <option value="many">4+</option>
           </select>
-          <label>Додаткові функції:</label>
+          <label>{{ t['request']['extra_features'] }}:</label>
           <div class="option-buttons">
-            <button type="button" class="option-btn" data-target="bot_database">Інтеграція з базою даних</button>
-            <button type="button" class="option-btn" data-target="bot_payments">Прийом платежів</button>
+            <button type="button" class="option-btn" data-target="bot_database">{{ t['request']['bot_database'] }}</button>
+            <button type="button" class="option-btn" data-target="bot_payments">{{ t['request']['bot_payments'] }}</button>
           </div>
           <input type="hidden" id="bot_database" name="bot_database" value="0">
           <input type="hidden" id="bot_payments" name="bot_payments" value="0">
@@ -117,32 +115,32 @@
       </div>
 
       <div class="form-step" id="step-3">
-        <label>Опис проєкту:</label>
-        <textarea name="description" placeholder="Опишіть ваш проєкт..." required></textarea>
+        <label>{{ t['request']['description'] }}:</label>
+        <textarea name="description" placeholder="{{ t['request']['description_placeholder'] }}" required></textarea>
 
-        <label>Прикріпити файл ТЗ (pdf, doc, docx, txt):</label>
+        <label>{{ t['request']['file_upload'] }}:</label>
         <input type="file" id="file_upload" name="file_upload" accept=".pdf,.doc,.docx,.txt">
 
-        <label>Коли з вами найкраще зв'язатися?</label>
+        <label>{{ t['request']['contact_time'] }}</label>
         <select name="contact_time">
-          <option value="">-- Оберіть --</option>
-          <option value="morning">Ранок</option>
-          <option value="day">День</option>
-          <option value="evening">Вечір</option>
+          <option value="">{{ t['request']['contact_time_placeholder'] }}</option>
+          <option value="morning">{{ t['request']['time_morning'] }}</option>
+          <option value="day">{{ t['request']['time_day'] }}</option>
+          <option value="evening">{{ t['request']['time_evening'] }}</option>
         </select>
 
         <input type="hidden" name="complexity" id="complexity" value="low">
       </div>
 
       <div class="form-step" id="step-4">
-        
+        <h3>{{ t['request']['title'] }}:</h3>
         <div id="previewArea">(автозаповнення після реалізації JS)</div>
       </div>
 
       <div class="step-buttons">
-        <button type="button" onclick="prevStep()" id="prevBtn" class="btn-light">Назад</button>
-        <button type="button" onclick="nextStep()" id="nextBtn" class="btn-primary">Далі</button>
-        <button type="submit" id="submitBtn" class="btn-primary" style="display:none">Надіслати</button>
+        <button type="button" onclick="prevStep()" id="prevBtn" class="btn-light">{{ t['request']['prev'] }}</button>
+        <button type="button" onclick="nextStep()" id="nextBtn" class="btn-primary">{{ t['request']['next'] }}</button>
+        <button type="submit" id="submitBtn" class="btn-primary" style="display:none">{{ t['request']['submit'] }}</button>
       </div>
     </form>
   </div>
@@ -150,12 +148,15 @@
   <div id="login_form" style="display:none">
     <form method="get" action="{{ url_for('auth.user_login') }}">
       <input type="hidden" name="next" value="{{ url_for('main.request_form') }}">
-      <p>Будь ласка, увійдіть у свій акаунт щоб залишити заявку.</p>
-      <button type="submit" class="btn-primary">Увійти</button>
+      <p>{{ t['request']['auth_required'] }}</p>
+      <button type="submit" class="btn-primary">{{ t['request']['login'] }}</button>
     </form>
   </div>
 </div>
 
+<script>
+  window.translations = {{ t['request'] | tojson }};
+</script>
 <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

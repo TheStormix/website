@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Реєстрація</title>
+    <title>{{ t['register']['title'] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
@@ -14,42 +14,38 @@
 </head>
 <body>
 
-    <!-- Кнопка Назад -->
-    
-
-    <div class="form-container">
-        <p>
-            <a href="{{ url_for('main.home') }}" class="back-btn">← На головну</a>
-        </p>
-        <div class="page-title">
-            <h1>Реєстрація користувача</h1>
-        </div>
-        
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <ul class="flash-messages">
-              {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <label for="username">Ім’я користувача:</label>
-            <input type="text" name="username" id="username" required>
-
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required>
-
-            <label for="password">Пароль:</label>
-            <input type="password" name="password" id="password" required>
-
-            <button type="submit" class="btn-primary">Зареєструватися</button>
-        </form>
+<div class="form-container">
+    <p>
+        <a href="{{ url_for('main.home') }}" class="back-btn">← {{ t['register']['back'] }}</a>
+    </p>
+    <div class="page-title">
+        <h1>{{ t['register']['heading'] }}</h1>
     </div>
 
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label for="username">{{ t['register']['username'] }}</label>
+        <input type="text" name="username" id="username" required>
+
+        <label for="email">{{ t['register']['email'] }}</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="password">{{ t['register']['password'] }}</label>
+        <input type="password" name="password" id="password" required>
+
+        <button type="submit" class="btn-primary">{{ t['register']['submit'] }}</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

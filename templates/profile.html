@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
   <meta charset="UTF-8">
-  <title>Особистий кабінет</title>
+  <title>{{ t['profile']['title'] }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
@@ -11,29 +11,28 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/profile-menu.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flash-messages.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
-  
 </head>
 <body>
 
 <div class="profile-container">
   <div class="profile-header">
-    <a href="{{ url_for('main.home') }}" class="btn-back">← На головну</a>
+    <a href="{{ url_for('main.home') }}" class="btn-back">← {{ t['profile']['to_home'] }}</a>
   </div>
 
   <div class="profile-card">
-    <h2>Особистий кабінет</h2>
+    <h2>{{ t['profile']['title'] }}</h2>
 
     <div class="profile-stats">
       <div class="stat-item">
-        <h3>Ваші заявки</h3>
-        <p>Активні: {{ active_requests }}</p>
-        <p>Всього: {{ total_requests }}</p>
+        <h3>{{ t['profile']['your_requests'] }}</h3>
+        <p>{{ t['profile']['active'] }}: {{ active_requests }}</p>
+        <p>{{ t['profile']['total'] }}: {{ total_requests }}</p>
       </div>
     </div>
 
     <div class="tab-container">
-      <button class="tab-button active" data-tab="tab-info">Особисті дані</button>
-      <button class="tab-button" data-tab="tab-requests">Мої заявки</button>
+      <button class="tab-button active" data-tab="tab-info">{{ t['profile']['tab_info'] }}</button>
+      <button class="tab-button" data-tab="tab-requests">{{ t['profile']['tab_requests'] }}</button>
     </div>
 
     <div id="tab-info" class="tab-content">
@@ -48,24 +47,24 @@
       {% endwith %}
 
       <div class="profile-info">
-        <p><strong>Ім’я:</strong> {{ username }}</p>
+        <p><strong>{{ t['profile']['name'] }}:</strong> {{ username }}</p>
         <p><strong>Email:</strong> {{ email }}</p>
-        <p><strong>Дата народження:</strong> {{ birthdate or 'Не вказано' }}</p>
+        <p><strong>{{ t['profile']['birth'] }}:</strong> {{ birthdate or t['profile']['not_set'] }}</p>
       </div>
 
       <form method="post" class="profile-form">
-        <h3>Оновити дату народження</h3>
+        <h3>{{ t['profile']['update_birth'] }}</h3>
         <input type="date" name="birthdate" value="{{ birthdate }}">
 
-        <h3>Змінити пароль</h3>
-        <label>Старий пароль:</label>
+        <h3>{{ t['profile']['change_pass'] }}</h3>
+        <label>{{ t['profile']['old_pass'] }}:</label>
         <input type="password" name="old_password" placeholder="•••••••">
-        <label>Новий пароль:</label>
+        <label>{{ t['profile']['new_pass'] }}:</label>
         <input type="password" name="new_password" placeholder="•••••••">
-        <label>Підтвердіть новий пароль:</label>
+        <label>{{ t['profile']['confirm_pass'] }}:</label>
         <input type="password" name="confirm_password" placeholder="•••••••">
 
-        <button type="submit" class="btn-save">Зберегти зміни</button>
+        <button type="submit" class="btn-save">{{ t['profile']['save'] }}</button>
       </form>
     </div>
 
@@ -75,8 +74,12 @@
           <table>
             <thead>
               <tr>
-                <th>Опис</th><th>Складність</th><th>Термін</th>
-                <th>Вартість</th><th>Дата дзвінка</th><th>Статус</th>
+                <th>{{ t['profile']['desc'] }}</th>
+                <th>{{ t['profile']['complexity'] }}</th>
+                <th>{{ t['profile']['term'] }}</th>
+                <th>{{ t['profile']['cost'] }}</th>
+                <th>{{ t['profile']['meeting'] }}</th>
+                <th>{{ t['profile']['status'] }}</th>
               </tr>
             </thead>
             <tbody>
@@ -94,18 +97,16 @@
           </table>
         </div>
       {% else %}
-        <p>У вас ще немає створених заявок.</p>
+        <p>{{ t['profile']['no_requests'] }}</p>
       {% endif %}
     </div>
   </div>
 
   <div class="logout-section">
-    <a href="{{ url_for('auth.logout') }}" class="btn-logout">Вийти</a>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout">{{ t['profile']['logout'] }}</a>
   </div>
 </div>
 
-
 <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-
 </body>
 </html>

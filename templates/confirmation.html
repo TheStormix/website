@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Заявку прийнято</title>
+    <title>{{ t['confirmation']['title'] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
@@ -14,33 +14,33 @@
         <!-- Початковий етап: Завантаження -->
         <div class="confirmation-container">
             <img id="status-icon" src="{{ url_for('static', filename='img/loading.gif') }}" alt="processing" />
-            <h2 id="status-title">Обробка заявки...</h2>
-            <p id="status-text">Збереження заявки...</p>
+            <h2 id="status-title">{{ t['confirmation']['processing'] }}</h2>
+            <p id="status-text">{{ t['confirmation']['saving'] }}</p>
         </div>
-        
+
         <div id="final-content" style="display: none;">
             <img id="status-icon" src="{{ url_for('static', filename='img/success-icon.png') }}" alt="успіх" />
-            <h2>Успішно!</h2>
-            <p>На вашу пошту надіслано підтвердження.</p>
-        
-            <h3>Дякуємо, {{ name }}!</h3>
-            <p>Ми отримали вашу заявку.</p>
-        
+            <h2>{{ t['confirmation']['success'] }}</h2>
+            <p>{{ t['confirmation']['email_sent'] }}</p>
+
+            <h3>{{ t['confirmation']['thanks'] }}, {{ name }}!</h3>
+            <p>{{ t['confirmation']['received'] }}</p>
+
             <div class="details">
-                <p><strong>Складність проєкту:</strong> {{ complexity }}</p>
-                <p><strong>Оцінка часу виконання:</strong> {{ estimated_time }}</p>
-                <p><strong>Оцінка вартості:</strong> {{ estimated_cost }} грн</p>
-                <p><strong>Очікуйте дзвінка:</strong> {{ meeting_date }}</p>
+                <p><strong>{{ t['confirmation']['complexity'] }}:</strong> {{ complexity }}</p>
+                <p><strong>{{ t['confirmation']['time'] }}:</strong> {{ estimated_time }}</p>
+                <p><strong>{{ t['confirmation']['cost'] }}:</strong> {{ estimated_cost }} грн</p>
+                <p><strong>{{ t['confirmation']['call'] }}:</strong> {{ meeting_date }}</p>
             </div>
-        
+
             <div class="button-group">
                 <a href="{{ url_for('main.home') }}">
-                    <button class="btn-primary">⬅ На головну</button>
+                    <button class="btn-primary">⬅ {{ t['confirmation']['to_home'] }}</button>
                 </a>
-        
+
                 {% if session.get('user_id') %}
                 <a href="{{ url_for('user.profile') }}">
-                    <button class="btn-primary">📄 Мої заявки</button>
+                    <button class="btn-primary">📄 {{ t['confirmation']['my_requests'] }}</button>
                 </a>
                 {% endif %}
             </div>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
   <meta charset="UTF-8">
-  <title>Адмін-панель</title>
+  <title>{{ t['admin']['title'] }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
@@ -14,16 +14,14 @@
 </head>
 <body>
   <div class="admin-wrapper">
-    
-
     <div class="action-buttons">
       <a href="{{ url_for('main.home') }}">
-        <button class="back-btn">← Назад на головну</button>
+        <button class="back-btn">← {{ t['admin']['back_home'] }}</button>
       </a>
-      
     </div>
+
     <div class="page-title">
-        <h1>Адмін-панель</h1>
+        <h1>{{ t['admin']['title'] }}</h1>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -37,9 +35,9 @@
     {% endwith %}
 
     <div class="tab-container">
-      <button class="tab-button active" data-tab="tab-requests">Заявки</button>
-      <button class="tab-button" data-tab="tab-users">Користувачі</button>
-      <button class="tab-button" data-tab="tab-statistics">Статистика</button>
+      <button class="tab-button active" data-tab="tab-requests">{{ t['admin']['requests_tab'] }}</button>
+      <button class="tab-button" data-tab="tab-users">{{ t['admin']['users_tab'] }}</button>
+      <button class="tab-button" data-tab="tab-statistics">{{ t['admin']['stats_tab'] }}</button>
     </div>
 
     <div id="tab-requests" class="tab-content">
@@ -48,9 +46,9 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th><th>Ім’я</th><th>Email</th><th>Опис</th>
-                <th>Складність</th><th>Термін</th><th>Вартість</th>
-                <th>Дата дзвінка</th><th>Статус</th><th>Рейтинг</th><th>Файл ТЗ</th><th>Дія</th>
+                <th>ID</th><th>{{ t['admin']['name'] }}</th><th>Email</th><th>{{ t['admin']['description'] }}</th>
+                <th>{{ t['admin']['complexity'] }}</th><th>{{ t['admin']['term'] }}</th><th>{{ t['admin']['price'] }}</th>
+                <th>{{ t['admin']['meeting'] }}</th><th>{{ t['admin']['status'] }}</th><th>{{ t['admin']['rating'] }}</th><th>{{ t['admin']['file'] }}</th><th>{{ t['admin']['action'] }}</th>
               </tr>
             </thead>
             <tbody>
@@ -79,30 +77,24 @@
                         <img src="{{ url_for('static', filename='img/docx-icon.png') }}" alt="DOCX" width="24">
                       {% endif %}
                     </a>
-                  {% else %}
-                    —
-                  {% endif %}
+                  {% else %}—{% endif %}
                 </td>
                 <td class="action-cell">
                   {% if r['status'] != 'виконано' %}
-                    <button type="button" class="complete-btn">Заявка виконана</button>
-                    <form class="complete-form"
-                          method="post"
-                          action="{{ url_for('admin.complete_request', request_id=r['id']) }}">
+                    <button type="button" class="complete-btn">{{ t['admin']['complete'] }}</button>
+                    <form class="complete-form" method="post" action="{{ url_for('admin.complete_request', request_id=r['id']) }}">
                       <div class="star-modal">
-                        <p>Оцініть клієнта:</p>
+                        <p>{{ t['admin']['rate_client'] }}</p>
                         {% for i in range(1,6) %}
                           <span class="star" data-value="{{ i }}">☆</span>
                         {% endfor %}
                       </div>
                     </form>
                   {% else %}
-                    <button class="complete-btn" disabled>Виконано</button>
+                    <button class="complete-btn" disabled>{{ t['admin']['done'] }}</button>
                   {% endif %}
-                  <form method="post"
-                        action="{{ url_for('admin.delete_request', request_id=r['id']) }}"
-                        onsubmit="return confirm('Видалити цю заявку?');">
-                    <button type="submit" class="delete-btn">Видалити</button>
+                  <form method="post" action="{{ url_for('admin.delete_request', request_id=r['id']) }}" onsubmit="return confirm('{{ t['admin']['confirm_delete'] }}');">
+                    <button type="submit" class="delete-btn">{{ t['admin']['delete'] }}</button>
                   </form>
                 </td>
               </tr>
@@ -111,7 +103,7 @@
           </table>
         </div>
       {% else %}
-        <p>Заявок поки що немає.</p>
+        <p>{{ t['admin']['no_requests'] }}</p>
       {% endif %}
     </div>
 
@@ -121,7 +113,7 @@
           <table>
             <thead>
               <tr>
-                <th>#</th><th>Ім’я</th><th>Email</th><th>Заявок</th><th>Середній рейтинг</th>
+                <th>#</th><th>{{ t['admin']['name'] }}</th><th>Email</th><th>{{ t['admin']['total_requests'] }}</th><th>{{ t['admin']['avg_rating'] }}</th>
               </tr>
             </thead>
             <tbody>
@@ -142,37 +134,42 @@
           </table>
         </div>
       {% else %}
-        <p>Немає жодного автора заявки.</p>
+        <p>{{ t['admin']['no_users'] }}</p>
       {% endif %}
     </div>
 
     <div id="tab-statistics" class="tab-content" style="display: block;">
         <div class="chart-row">
           <div class="chart-block">
-            <h3>📊 Типи продуктів</h3>
+            <h3>📊 {{ t['admin']['product_types'] }}</h3>
             <canvas id="productChart" width="350" height="300"></canvas>
           </div>
           <div class="chart-block">
-            <h3>📈 Складність проектів</h3>
+            <h3>📈 {{ t['admin']['project_complexity'] }}</h3>
             <canvas id="complexityChart"width="350" height="300"></canvas>
           </div>
         </div>
     </div>
     <div class="logout-wrapper">
         <a href="{{ url_for('admin.admin_logout') }}">
-          <button class="logout-btn">Вийти</button>
+          <button class="logout-btn">{{ t['admin']['logout'] }}</button>
         </a>
     </div>
-
-   
-
-  </div> <!-- /.admin-wrapper -->
+  </div>
 
   <script>
     window.chartData = {
       stats: {{ stats|tojson|safe }},
       complexity_stats: {{ complexity_stats|tojson|safe }}
     };
+  </script>
+  <script>
+    window.chartData = {
+      stats: {{ stats|tojson|safe }},
+      complexity_stats: {{ complexity_stats|tojson|safe }}
+    };
+  
+    window.translations = {{ t | tojson | safe }};
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{{ url_for('static', filename='js/admin.js') }}"></script>

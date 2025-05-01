@@ -8,9 +8,9 @@ function toggleMenu() {
       document.getElementById("dropdown").classList.remove('show');
     }
   });
-
+  
   // === Перемикання вкладок в профілі (profile.html) ===
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tab-button');
     const contents = document.querySelectorAll('.tab-content');
   
@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   
-    // При старті показати першу вкладку
     if (tabs.length > 0 && contents.length > 0) {
       tabs[0].classList.add('active');
       contents.forEach((content, index) => {
@@ -32,9 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
- 
   // === Логіка вибору типу продукту і розрахунку складності (request.html) ===
-function showForm(type) {
+  function showForm(type) {
     document.getElementById('user_choice').style.display = 'none';
     document.getElementById('new_user_form').style.display = (type === 'new') ? 'block' : 'none';
     document.getElementById('login_form').style.display = (type === 'existing') ? 'block' : 'none';
@@ -92,109 +90,106 @@ function showForm(type) {
       });
     });
   });
-// scripts.js (додатковий код для multi-step форми)
-
-
-let currentStep = 0;
-const steps = document.querySelectorAll('.form-step');
-const nextBtn = document.getElementById('nextBtn');
-const prevBtn = document.getElementById('prevBtn');
-const submitBtn = document.getElementById('submitBtn');
-
-function showStep(step) {
-  steps.forEach((el, idx) => {
-    el.classList.toggle('active', idx === step);
-  });
-  prevBtn.style.display = step === 0 ? 'none' : 'inline-block';
-  nextBtn.style.display = step === steps.length - 1 ? 'none' : 'inline-block';
-  submitBtn.style.display = step === steps.length - 1 ? 'inline-block' : 'none';
-
-  if (step === steps.length - 1) {
-    fillPreview();
-  }
-}
-
-function nextStep() {
-  const currentFormStep = steps[currentStep];
-  const inputs = currentFormStep.querySelectorAll('input, select, textarea');
-
-  for (const input of inputs) {
-    if (!input.checkValidity()) {
-      input.reportValidity();
-      return;
+  
+  let currentStep = 0;
+  const steps = document.querySelectorAll('.form-step');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  function showStep(step) {
+    steps.forEach((el, idx) => {
+      el.classList.toggle('active', idx === step);
+    });
+    prevBtn.style.display = step === 0 ? 'none' : 'inline-block';
+    nextBtn.style.display = step === steps.length - 1 ? 'none' : 'inline-block';
+    submitBtn.style.display = step === steps.length - 1 ? 'inline-block' : 'none';
+  
+    if (step === steps.length - 1) {
+      fillPreview();
     }
   }
-
-  if (currentStep < steps.length - 1) {
-    currentStep++;
-    showStep(currentStep);
+  
+  function nextStep() {
+    const currentFormStep = steps[currentStep];
+    const inputs = currentFormStep.querySelectorAll('input, select, textarea');
+  
+    for (const input of inputs) {
+      if (!input.checkValidity()) {
+        input.reportValidity();
+        return;
+      }
+    }
+  
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      showStep(currentStep);
+    }
   }
-}
-
-function prevStep() {
-  if (currentStep > 0) {
-    currentStep--;
-    showStep(currentStep);
+  
+  function prevStep() {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
   }
-}
-
-function fillPreview() {
-  const preview = document.getElementById('previewArea');
-  const form = document.getElementById('requestForm');
-  const formData = new FormData(form);
-
-  const getValue = (key) => formData.get(key) || '-';
-  const badges = [];
-
-  if (getValue('product_type') === 'website') {
-    if (getValue('admin_panel') === '1') badges.push('Адмінпанель');
-    if (getValue('auth') === '1') badges.push('Авторизація');
-  }
-  if (getValue('product_type') === 'app') {
-    if (getValue('login') === '1') badges.push('Вхід у систему');
-    if (getValue('user_profile') === '1') badges.push('Профіль користувача');
-  }
-  if (getValue('product_type') === 'bot') {
-    if (getValue('bot_database') === '1') badges.push('Інтеграція з базою');
-    if (getValue('bot_payments') === '1') badges.push('Прийом платежів');
-  }
-
-  preview.innerHTML = `
-    <div class="preview-card">
-      <h3>📋 Перевірте вашу заявку:</h3>
-      <div class="preview-item"><span>👤</span> <strong>Ім’я:</strong> ${getValue('name')}</div>
-      <div class="preview-item"><span>📧</span> <strong>Email:</strong> ${getValue('email')}</div>
-      <div class="preview-item"><span>🔧</span> <strong>Тип продукту:</strong> ${getValue('product_type')}</div>
-      ${getValue('product_type') === 'website' ? `
-        <div class="preview-item"><span>🌐</span> <strong>Тип сайту:</strong> ${getValue('site_type')}</div>
-        <div class="preview-item"><span>📄</span> <strong>Кількість сторінок:</strong> ${getValue('pages')}</div>
-      ` : ''}
-      ${getValue('product_type') === 'app' ? `
-        <div class="preview-item"><span>📱</span> <strong>Платформа:</strong> ${getValue('platform')}</div>
-      ` : ''}
-      ${getValue('product_type') === 'bot' ? `
-        <div class="preview-item"><span>🤖</span> <strong>К-сть команд:</strong> ${getValue('bot_commands')}</div>
-      ` : ''}
-      ${badges.length > 0 ? `
-        <div class="preview-item"><span>🛠️</span> <strong>Додаткові функції:</strong>
-          <div class="preview-badges">
-            ${badges.map(text => `<span class="preview-badge">${text}</span>`).join('')}
+  
+  function fillPreview() {
+    const t = window.translations?.request || {};
+    const preview = document.getElementById('previewArea');
+    const form = document.getElementById('requestForm');
+    const formData = new FormData(form);
+  
+    const getValue = (key) => formData.get(key) || '-';
+    const badges = [];
+  
+    if (getValue('product_type') === 'website') {
+      if (getValue('admin_panel') === '1') badges.push(t.admin_panel || 'Адмінпанель');
+      if (getValue('auth') === '1') badges.push(t.auth || 'Авторизація');
+    }
+    if (getValue('product_type') === 'app') {
+      if (getValue('login') === '1') badges.push(t.login || 'Вхід у систему');
+      if (getValue('user_profile') === '1') badges.push(t.user_profile || 'Профіль користувача');
+    }
+    if (getValue('product_type') === 'bot') {
+      if (getValue('bot_database') === '1') badges.push(t.bot_database || 'Інтеграція з базою');
+      if (getValue('bot_payments') === '1') badges.push(t.bot_payments || 'Прийом платежів');
+    }
+  
+    preview.innerHTML = `
+      <div class="preview-card">
+        <h3>📋 ${t.preview_heading || 'Перевірте вашу заявку:'}</h3>
+        <div class="preview-item"><span>👤</span> <strong>${t.name || 'Ім’я'}:</strong> ${getValue('name')}</div>
+        <div class="preview-item"><span>📧</span> <strong>Email:</strong> ${getValue('email')}</div>
+        <div class="preview-item"><span>🔧</span> <strong>${t.product_type || 'Тип продукту'}:</strong> ${getValue('product_type')}</div>
+        ${getValue('product_type') === 'website' ? `
+          <div class="preview-item"><span>🌐</span> <strong>${t.site_type || 'Тип сайту'}:</strong> ${getValue('site_type')}</div>
+          <div class="preview-item"><span>📄</span> <strong>${t.pages || 'Кількість сторінок'}:</strong> ${getValue('pages')}</div>
+        ` : ''}
+        ${getValue('product_type') === 'app' ? `
+          <div class="preview-item"><span>📱</span> <strong>${t.platform || 'Платформа'}:</strong> ${getValue('platform')}</div>
+        ` : ''}
+        ${getValue('product_type') === 'bot' ? `
+          <div class="preview-item"><span>🤖</span> <strong>${t.bot_commands || 'К-сть команд'}:</strong> ${getValue('bot_commands')}</div>
+        ` : ''}
+        ${badges.length > 0 ? `
+          <div class="preview-item"><span>🛠️</span> <strong>${t.extra_features || 'Додаткові функції'}:</strong>
+            <div class="preview-badges">
+              ${badges.map(text => `<span class="preview-badge">${text}</span>`).join('')}
+            </div>
           </div>
-        </div>
-      ` : ''}
-      <div class="preview-item"><span>📃</span> <strong>Опис:</strong> ${getValue('description')}</div>
-      <div class="preview-item"><span>⏰</span> <strong>Час для зв'язку:</strong> ${getValue('contact_time')}</div>
-    </div>
-  `;
-}
-
-// Запускаємо перший крок
-if (document.getElementById('requestForm')) {
-  showStep(currentStep);
-
-  document.getElementById('requestForm').addEventListener('submit', function(e) {
-    console.log('Форма відправляється...');
-  });
-} 
-
-
+        ` : ''}
+        <div class="preview-item"><span>📃</span> <strong>${t.description || 'Опис'}:</strong> ${getValue('description')}</div>
+        <div class="preview-item"><span>⏰</span> <strong>${t.contact_time || 'Час для зв\'язку'}:</strong> ${getValue('contact_time')}</div>
+      </div>
+    `;
+  }
+  
+  if (document.getElementById('requestForm')) {
+    showStep(currentStep);
+  
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+      console.log('Форма відправляється...');
+    });
+  }
+  

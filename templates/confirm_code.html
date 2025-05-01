@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Підтвердження реєстрації</title>
+    <title>{{ t['confirm']['title'] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
@@ -11,7 +11,9 @@
 <body>
 
 <div class="form-container">
-    <h1>Підтвердження реєстрації</h1>
+    <div class="page-title">
+        <h1>{{ t['confirm']['heading'] }}</h1>
+    </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -24,24 +26,22 @@
     {% endwith %}
 
     <form method="POST">
-        <label for="code">Введіть код підтвердження, який надійшов на вашу пошту:</label>
-        <input type="text" name="code" id="code" placeholder="Наприклад: 4F7G2B" required>
+        <label for="code">{{ t['confirm']['label'] }}</label>
+        <input type="text" name="code" id="code" placeholder="{{ t['confirm']['placeholder'] }}" required>
 
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="submit" class="btn-primary">Підтвердити</button>
+            <button type="submit" class="btn-primary">{{ t['confirm']['submit'] }}</button>
 
-            <!-- Кнопка надсилання коду -->
             <button type="button" id="resend-btn" class="btn-primary" disabled style="background-color: #ccc; cursor: not-allowed;">
-                Надіслати код повторно (60)
+                {{ t['confirm']['resend'] }} (60)
             </button>
         </div>
     </form>
 
     <p style="text-align: center; margin-top: 20px;">
-        <a href="{{ url_for('auth.register') }}" class="back-btn">← Назад до реєстрації</a>
+        <a href="{{ url_for('auth.register') }}" class="back-btn">← {{ t['confirm']['back'] }}</a>
     </p>
 </div>
-
 
 <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>

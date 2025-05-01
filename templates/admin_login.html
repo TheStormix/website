@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Вхід адміністратора</title>
+    <title>{{ t['admin_login']['title'] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
@@ -11,19 +11,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile-menu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/flash-messages.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
-    
-
 </head>
 <body>
     <div class="page-title">
-        <h1>Вхід до адмін-панелі</h1>
+        <h1>{{ t['admin_login']['heading'] }}</h1>
     </div>
     <form method="post">
-        <label>Логін:</label><br>
+        <label>{{ t['admin_login']['login'] }}:</label><br>
         <input type="text" name="username" required><br>
-        <label>Пароль:</label><br>
+        <label>{{ t['admin_login']['password'] }}:</label><br>
         <input type="password" name="password" required><br><br>
-        <button type="submit">Увійти</button>
+        <button type="submit">{{ t['admin_login']['submit'] }}</button>
     </form>
 
     {% with messages = get_flashed_messages() %}

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 import sqlite3
+from app.utils.i18n import load_translations
 
 bp = Blueprint('admin', __name__)
 
@@ -10,22 +11,28 @@ def get_db_connection():
 
 @bp.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
+    lang = session.get('lang', 'uk')
+    t = load_translations(lang)
+
     if request.method == 'POST':
         if request.form.get('username') == 'admin' and request.form.get('password') == 'admin123':
             session['admin'] = True
             return redirect(url_for('admin.admin_panel'))
-        flash('Неправильний логін або пароль.', 'error')
+        flash(t['admin'].get('invalid_login', 'Неправильний логін або пароль.'), 'error')
         return redirect(url_for('admin.admin_login'))
-    return render_template('admin_login.html')
+
+    return render_template('admin_login.html', t=t)
 
 @bp.route('/admin')
 def admin_panel():
     if not session.get('admin'):
         return redirect(url_for('admin.admin_login'))
 
+    lang = session.get('lang', 'uk')
+    t = load_translations(lang)
+
     conn = get_db_connection()
 
-    # 1) Всі заявки
     reqs = conn.execute('''
         SELECT id, name, email, description,
            complexity, estimated_time, estimated_cost, meeting_date,
@@ -35,8 +42,6 @@ def admin_panel():
         ORDER BY id DESC
     ''').fetchall()
 
-    # 2) Унікальні "користувачі" з таблиці requests,
-    #    з підрахунком кількості заявок і середнім рейтингом
     users = conn.execute('''
         SELECT
             name,
@@ -48,14 +53,12 @@ def admin_panel():
         ORDER BY total_requests DESC, avg_rating DESC
     ''').fetchall()
 
-    # 3) Статистика типів продуктів
     stats_raw = conn.execute('''
         SELECT product_type, COUNT(*) as count
         FROM requests
         GROUP BY product_type
     ''').fetchall()
 
-    # 4) Статистика складності
     complexity_raw = conn.execute('''
         SELECT complexity, COUNT(*) as count
         FROM requests
@@ -64,12 +67,12 @@ def admin_panel():
 
     conn.close()
 
-    # Конвертуємо об'єкти Row у словники, щоб їх можна було серіалізувати
     stats = [dict(row) for row in stats_raw]
     complexity_stats = [dict(row) for row in complexity_raw]
 
     return render_template(
         'admin.html',
+        t=t,
         requests=reqs,
         users=users,
         stats=stats,
@@ -81,12 +84,15 @@ def change_status(request_id):
     if not session.get('admin'):
         return redirect(url_for('admin.admin_login'))
 
+    lang = session.get('lang', 'uk')
+    t = load_translations(lang)
+
     new_status = request.form.get('status')
     conn = get_db_connection()
     conn.execute('UPDATE requests SET status = ? WHERE id = ?', (new_status, request_id))
     conn.commit()
     conn.close()
-    flash(f'Статус заявки #{request_id} змінено на «{new_status}».', 'success')
+    flash(t['admin'].get('status_changed', 'Статус заявки змінено на').replace('{id}', str(request_id)).replace('{status}', new_status), 'success')
     return redirect(url_for('admin.admin_panel'))
 
 @bp.route('/request/<int:request_id>/complete', methods=['POST'])
@@ -94,12 +100,15 @@ def complete_request(request_id):
     if not session.get('admin'):
         return redirect(url_for('admin.admin_login'))
 
+    lang = session.get('lang', 'uk')
+    t = load_translations(lang)
+
     try:
         rating = int(request.form.get('rating'))
         if rating < 1 or rating > 5:
             raise ValueError
     except:
-        flash('Невірний рейтинг. Виберіть 1–5 зірок.', 'error')
+        flash(t['admin'].get('invalid_rating', 'Невірний рейтинг. Виберіть 1–5 зірок.'), 'error')
         return redirect(url_for('admin.admin_panel'))
 
     conn = get_db_connection()
@@ -111,7 +120,7 @@ def complete_request(request_id):
     ''', (rating, request_id))
     conn.commit()
     conn.close()
-    flash(f'Заявка #{request_id} виконана, рейтинг клієнту: {rating}★.', 'success')
+    flash(t['admin'].get('request_completed', 'Заявка виконана, рейтинг клієнту: {rating}★.').replace('{id}', str(request_id)).replace('{rating}', str(rating)), 'success')
     return redirect(url_for('admin.admin_panel'))
 
 @bp.route('/delete/<int:request_id>', methods=['POST'])
@@ -119,11 +128,14 @@ def delete_request(request_id):
     if not session.get('admin'):
         return redirect(url_for('admin.admin_login'))
 
+    lang = session.get('lang', 'uk')
+    t = load_translations(lang)
+
     conn = get_db_connection()
     conn.execute('DELETE FROM requests WHERE id = ?', (request_id,))
     conn.commit()
     conn.close()
-    flash(f'Заявку #{request_id} видалено.', 'success')
+    flash(t['admin'].get('request_deleted', 'Заявку {id} видалено.').replace('{id}', str(request_id)), 'success')
     return redirect(url_for('admin.admin_panel'))
 
 @bp.route('/admin-logout')

@@ -1,5 +1,5 @@
 /* === БАЗОВІ СТИЛІ === */
-body {
+body:not(.language-switcher,.language-container) {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -243,3 +243,50 @@ html {
     transform: translateY(0);
   }
 }
+
+.header-user-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  
+  .language-switcher button {
+    background-color: transparent;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  
+  .language-switcher button:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .language-switcher {
+    position: absolute;
+    top: 4px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+  }
+  .language-container,
+  .language-switcher-wrapper {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+  .language-switcher form {
+    background: none !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }

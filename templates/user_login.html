@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ session.get('lang', 'uk') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Вхід користувача</title>
+    <title>{{ t['user_login']['title'] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
@@ -14,7 +14,7 @@
 </head>
 <body>
     <div class="page-title">
-        <h1>Вхід в особистий кабінет</h1>
+        <h1>{{ t['user_login']['heading'] }}</h1>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -29,17 +29,17 @@
 
     <form method="post">
         <input type="hidden" name="next" value="{{ next }}">
-        <label>Email:</label><br>
+        <label>{{ t['user_login']['email'] }}:</label><br>
         <input type="email" name="email" required><br>
-        <label>Пароль:</label><br>
+        <label>{{ t['user_login']['password'] }}:</label><br>
         <input type="password" name="password" required><br><br>
-        <button type="submit">Увійти</button>
+        <button type="submit">{{ t['user_login']['submit'] }}</button>
     </form>
+
     <p style="text-align: center; margin-top: 10px;">
-        <a href="{{ url_for('auth.forgot_password') }}" class="back-btn">Забули пароль?</a>
+        <a href="{{ url_for('auth.forgot_password') }}" class="back-btn">{{ t['user_login']['forgot'] }}</a>
     </p>
+
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    
-    
 </body>
 </html>

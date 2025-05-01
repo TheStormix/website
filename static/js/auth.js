@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const resendBtn = document.getElementById('resend-btn');
     let timerInterval; 
+    const t = window.translations?.confirm || {};
 
     function startTimer() {
         let secondsLeft = 60;
@@ -9,11 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
         resendBtn.classList.remove('btn-primary');
         resendBtn.style.backgroundColor = '#ccc';
         resendBtn.style.cursor = 'not-allowed';
-        resendBtn.textContent = `Надіслати код повторно (${secondsLeft})`;
+        resendBtn.textContent = `${t.resend || 'Надіслати код повторно'} (${secondsLeft})`;
 
         timerInterval = setInterval(() => {
             secondsLeft--;
-            resendBtn.textContent = `Надіслати код повторно (${secondsLeft})`;
+            resendBtn.textContent = `${t.resend || 'Надіслати код повторно'} (${secondsLeft})`;
 
             if (secondsLeft <= 0) {
                 clearInterval(timerInterval);
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 resendBtn.classList.add('btn-primary');
                 resendBtn.style.backgroundColor = '';
                 resendBtn.style.cursor = 'pointer';
-                resendBtn.textContent = 'Надіслати код повторно';
+                resendBtn.textContent = t.resend || 'Надіслати код повторно';
             }
         }, 1000);
     }
@@ -76,10 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
             resendBtn.classList.remove('btn-primary');
             resendBtn.style.backgroundColor = '#ccc';
             resendBtn.style.cursor = 'not-allowed';
-            resendBtn.textContent = 'Надсилання...';
+            resendBtn.textContent = t.sending || 'Надсилання...';
 
             try {
-                const response = await fetch('/resend_code', {  // ПРЯМИЙ шлях /resend_code
+                const response = await fetch('/resend_code', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -87,30 +88,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Помилка при надсиланні коду');
+                    throw new Error(t.error_sending || 'Помилка при надсиланні коду');
                 }
 
                 clearInterval(timerInterval);
                 startTimer();
-                showTemporaryMessage('Код підтвердження надіслано повторно.', 'success');
+                showTemporaryMessage(t.resent_success || 'Код підтвердження надіслано повторно.', 'success');
 
             } catch (error) {
-                showTemporaryMessage(error.message || 'Помилка з’єднання.', 'error');
+                showTemporaryMessage(error.message || t.connection_error || 'Помилка з’єднання.', 'error');
                 resendBtn.disabled = false;
                 resendBtn.classList.add('btn-primary');
                 resendBtn.style.backgroundColor = '';
                 resendBtn.style.cursor = 'pointer';
-                resendBtn.textContent = 'Надіслати код повторно';
+                resendBtn.textContent = t.resend || 'Надіслати код повторно';
             }
         });
     }
 });
+
 setTimeout(() => {
     const flashMessages = document.querySelectorAll('.flash-messages li');
     flashMessages.forEach(msg => {
-        msg.classList.add('fade-out'); // Спочатку додаємо клас для анімації
+        msg.classList.add('fade-out');
         setTimeout(() => {
-            msg.remove(); // А вже через 0.5s видаляємо елемент
-        }, 500); // Час повинен бути такий самий як в transition: 0.5s у CSS
+            msg.remove();
+        }, 500);
     });
-}, 4000); // Початок після 4 секунд
+}, 4000);
