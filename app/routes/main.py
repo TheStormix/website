@@ -6,6 +6,7 @@ from app import mail
 import os
 from werkzeug.utils import secure_filename
 from app.utils.i18n import load_translations
+import uuid
 
 bp = Blueprint('main', __name__)
 
@@ -44,30 +45,83 @@ def request_form():
         email = request.form['email']
         product_type = request.form.get('product_type')
         description = request.form['description']
-        complexity = request.form['complexity']
 
-        if complexity == 'low':
+        # === Новий динамічний підрахунок ціни ===
+        base_cost = 0
+        base_days = 1
+
+        if product_type == 'website':
+            base_cost += 200
+            site_type = request.form.get('site_type')
+            pages = request.form.get('pages')
+            if site_type == 'ecommerce':
+                base_cost += 150
+            elif site_type == 'corporate':
+                base_cost += 100
+
+            if pages == '3+':
+                base_cost += 100
+
+            if request.form.get('admin_panel') == '1':
+                base_cost += 120
+            if request.form.get('auth') == '1':
+                base_cost += 80
+
+        elif product_type == 'app':
+            base_cost += 300
+            platform = request.form.get('platform')
+            if platform == 'both':
+                base_cost += 200
+            elif platform in ['android', 'ios']:
+                base_cost += 100
+
+            if request.form.get('login') == '1':
+                base_cost += 100
+            if request.form.get('user_profile') == '1':
+                base_cost += 120
+
+        elif product_type == 'bot':
+            base_cost += 150
+            bot_commands = request.form.get('bot_commands')
+            if bot_commands == 'many':
+                base_cost += 100
+
+            if request.form.get('bot_database') == '1':
+                base_cost += 120
+            if request.form.get('bot_payments') == '1':
+                base_cost += 150
+
+        # === Визначаємо складність за ціною ===
+        if base_cost < 300:
+            complexity = 'low'
             estimated_time = rt.get('days_1_2', '1-2 days')
-            estimated_cost = 100
-        elif complexity == 'medium':
+        elif base_cost < 600:
+            complexity = 'medium'
             estimated_time = rt.get('days_3_5', '3-5 days')
-            estimated_cost = 300
         else:
+            complexity = 'high'
             estimated_time = rt.get('days_7_plus', '7+ days')
-            estimated_cost = 600
+
+        estimated_cost = base_cost
 
         meeting_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
 
         uploaded_file = request.files.get('file_upload')
         file_path = None
 
-        if uploaded_file and allowed_file(uploaded_file.filename):
-            filename = secure_filename(uploaded_file.filename)
-            uploads_dir = os.path.join('static', 'uploads')
+        if uploaded_file and uploaded_file.filename and allowed_file(uploaded_file.filename):
+            ext = uploaded_file.filename.rsplit('.', 1)[1].lower()
+            unique_name = f"{uuid.uuid4().hex}.{ext}"  # Генеруємо унікальне ім’я
+            uploads_dir = os.path.join(os.getcwd(), 'static', 'uploads')
             os.makedirs(uploads_dir, exist_ok=True)
-            saved_path = os.path.join(uploads_dir, filename)
-            uploaded_file.save(saved_path)
-            file_path = filename
+            saved_path = os.path.join(uploads_dir, unique_name)
+
+            try:
+                uploaded_file.save(saved_path)
+                file_path = unique_name
+            except Exception as e:
+                print("❌ File save error:", e)
+                file_path = None
 
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
@@ -92,7 +146,7 @@ def request_form():
 
 🛠️ {rt.get("email_complexity", "Complexity")}: {complexity}
 ⏱️ {rt.get("email_time", "Estimated duration")}: {estimated_time}
-💰 {rt.get("email_cost", "Estimated cost")}: {estimated_cost} грн
+💰 {rt.get("email_cost", "Estimated cost")}: {estimated_cost} usd
 
 {rt.get("email_footer", "Best regards,\nIT Company")}
 """

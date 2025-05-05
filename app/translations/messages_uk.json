@@ -222,13 +222,24 @@
     "days_1_2": "1-2 дні",
     "days_3_5": "3-5 днів",
     "days_7_plus": "7+ днів",
-    "product_website": "Веб-сайт",
+    
     "type_app": "Мобільний додаток",
     "type_bot": "Telegram-бот",
     "landing": "Лендінг",
     "ecommerce": "Інтернет-магазин",
     "corporate": "Корпоративний сайт",
-    "preview_title": "Перевірте вашу заявку:"
+    "preview_title": "Перевірте вашу заявку:",
+    "product_website": "Веб-сайт",
+    "product_app": "Мобільний додаток",
+    "product_bot": "Telegram-бот",
+    "site_type": "Тип сайту",
+    "site_landing": "Лендінг",
+    "site_ecommerce": "Інтернет-магазин",
+    "site_corporate": "Корпоративний сайт",
+    "form_sending": "Форма відправляється..."
+  
+
+  
     },
 
     "user_login": {

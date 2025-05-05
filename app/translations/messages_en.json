@@ -226,7 +226,17 @@
     "landing": "Landing Page",
     "ecommerce": "E-commerce",
     "corporate": "Corporate Website",
-    "preview_title": "Review your request:"
+    "preview_title": "Review your request:",
+    "product_app": "Mobile App",
+    "product_website": "Website",
+    "product_bot": "Telegram Bot",
+    "site_landing": "Landing Page",
+    "site_ecommerce": "E-Commerce",
+    "site_corporate": "Corporate Website",
+    "form_sending": "Form is being submitted..."
+    
+    
+    
     },
     "user_login": {
     "title": "User Login",

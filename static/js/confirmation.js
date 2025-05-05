@@ -5,8 +5,8 @@ const statusIcon = document.getElementById('status-icon');
 const t = window.translations?.confirmation || {};
 
 setTimeout(() => {
-  statusTitle.textContent = t.processing || "Обробка заявки...";
-  statusText.textContent = t.sending || "Надсилання листа на пошту...";
+  statusTitle.textContent = translations.processing || "Обробка заявки...";
+  statusText.textContent = translations.sending || "Надсилання листа на пошту...";
 }, 1000);
 
 setTimeout(() => {

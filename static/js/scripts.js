@@ -135,7 +135,7 @@ function toggleMenu() {
   }
   
   function fillPreview() {
-    const t = window.translations?.request || {};
+    const t = window.translations || {};
     const preview = document.getElementById('previewArea');
     const form = document.getElementById('requestForm');
     const formData = new FormData(form);
@@ -143,53 +143,63 @@ function toggleMenu() {
     const getValue = (key) => formData.get(key) || '-';
     const badges = [];
   
-    if (getValue('product_type') === 'website') {
-      if (getValue('admin_panel') === '1') badges.push(t.admin_panel || 'Адмінпанель');
-      if (getValue('auth') === '1') badges.push(t.auth || 'Авторизація');
+    const productType = getValue('product_type');
+  
+    if (productType === 'website') {
+      if (getValue('admin_panel') === '1') badges.push(t.admin_panel || 'Admin panel');
+      if (getValue('auth') === '1') badges.push(t.auth || 'Authorization');
     }
-    if (getValue('product_type') === 'app') {
-      if (getValue('login') === '1') badges.push(t.login || 'Вхід у систему');
-      if (getValue('user_profile') === '1') badges.push(t.user_profile || 'Профіль користувача');
+    if (productType === 'app') {
+      if (getValue('login') === '1') badges.push(t.login || 'Login');
+      if (getValue('user_profile') === '1') badges.push(t.user_profile || 'User Profile');
     }
-    if (getValue('product_type') === 'bot') {
-      if (getValue('bot_database') === '1') badges.push(t.bot_database || 'Інтеграція з базою');
-      if (getValue('bot_payments') === '1') badges.push(t.bot_payments || 'Прийом платежів');
+    if (productType === 'bot') {
+      if (getValue('bot_database') === '1') badges.push(t.bot_database || 'Database Integration');
+      if (getValue('bot_payments') === '1') badges.push(t.bot_payments || 'Payments');
     }
   
     preview.innerHTML = `
-      <div class="preview-card">
-        <h3>📋 ${t.preview_heading || 'Перевірте вашу заявку:'}</h3>
-        <div class="preview-item"><span>👤</span> <strong>${t.name || 'Ім’я'}:</strong> ${getValue('name')}</div>
-        <div class="preview-item"><span>📧</span> <strong>Email:</strong> ${getValue('email')}</div>
-        <div class="preview-item"><span>🔧</span> <strong>${t.product_type || 'Тип продукту'}:</strong> ${getValue('product_type')}</div>
-        ${getValue('product_type') === 'website' ? `
-          <div class="preview-item"><span>🌐</span> <strong>${t.site_type || 'Тип сайту'}:</strong> ${getValue('site_type')}</div>
-          <div class="preview-item"><span>📄</span> <strong>${t.pages || 'Кількість сторінок'}:</strong> ${getValue('pages')}</div>
-        ` : ''}
-        ${getValue('product_type') === 'app' ? `
-          <div class="preview-item"><span>📱</span> <strong>${t.platform || 'Платформа'}:</strong> ${getValue('platform')}</div>
-        ` : ''}
-        ${getValue('product_type') === 'bot' ? `
-          <div class="preview-item"><span>🤖</span> <strong>${t.bot_commands || 'К-сть команд'}:</strong> ${getValue('bot_commands')}</div>
-        ` : ''}
-        ${badges.length > 0 ? `
-          <div class="preview-item"><span>🛠️</span> <strong>${t.extra_features || 'Додаткові функції'}:</strong>
-            <div class="preview-badges">
-              ${badges.map(text => `<span class="preview-badge">${text}</span>`).join('')}
-            </div>
+    <div class="preview-card">
+      <h3>📋 ${t.preview_title || 'Review your request:'}</h3>
+      <div class="preview-item"><span>👤</span> <strong>${t.name || 'Name'}:</strong> ${getValue('name')}</div>
+      <div class="preview-item"><span>📧</span> <strong>${t.email || 'Email'}:</strong> ${getValue('email')}</div>
+      <div class="preview-item"><span>🔧</span> <strong>${t.product_type || 'Product Type'}:</strong> ${t[`product_${productType}`] || productType}</div>
+
+      ${productType === 'website' ? `
+        <div class="preview-item"><span>🌐</span> <strong>${t.site_type || 'Site Type'}:</strong> ${t[`site_${getValue('site_type')}`] || getValue('site_type')}</div>
+        <div class="preview-item"><span>📄</span> <strong>${t.pages || 'Number of Pages'}:</strong> ${getValue('pages')}</div>
+      ` : ''}
+
+      ${productType === 'app' ? `
+        <div class="preview-item"><span>📱</span> <strong>${t.platform || 'Platform'}:</strong> ${getValue('platform')}</div>
+      ` : ''}
+
+      ${productType === 'bot' ? `
+        <div class="preview-item"><span>🤖</span> <strong>${t.bot_commands || 'Number of Commands'}:</strong> ${getValue('bot_commands')}</div>
+      ` : ''}
+
+      ${badges.length > 0 ? `
+        <div class="preview-item"><span>🛠️</span> <strong>${t.extra_features || 'Additional Features'}:</strong>
+          <div class="preview-badges">
+            ${badges.map(text => `<span class="preview-badge">${text}</span>`).join('')}
           </div>
-        ` : ''}
-        <div class="preview-item"><span>📃</span> <strong>${t.description || 'Опис'}:</strong> ${getValue('description')}</div>
-        <div class="preview-item"><span>⏰</span> <strong>${t.contact_time || 'Час для зв\'язку'}:</strong> ${getValue('contact_time')}</div>
-      </div>
-    `;
+        </div>
+      ` : ''}
+
+      <div class="preview-item"><span>📃</span> <strong>${t.description || 'Project Description'}:</strong> ${getValue('description')}</div>
+      <div class="preview-item"><span>⏰</span> <strong>${t.contact_time || 'Best time to contact you'}:</strong> ${t[`time_${getValue('contact_time')}`] || getValue('contact_time')}</div>
+    </div>
+  `;
+
+
   }
   
   if (document.getElementById('requestForm')) {
     showStep(currentStep);
   
-    document.getElementById('requestForm').addEventListener('submit', function(e) {
-      console.log('Форма відправляється...');
+    document.getElementById('requestForm').addEventListener('submit', function (e) {
+      const t = window.translations || {};
+      console.log(t.form_sending || 'Form is being submitted...');
     });
   }
   
