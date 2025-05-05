@@ -7,6 +7,9 @@ import os
 from werkzeug.utils import secure_filename
 from app.utils.i18n import load_translations
 import uuid
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+import pytz
 
 bp = Blueprint('main', __name__)
 
@@ -15,14 +18,65 @@ ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# === Головна сторінка ===
+def add_event_to_calendar(name, email, description, datetime_str):
+    print(f"📅 add_event_to_calendar called with: {name=}, {email=}, {datetime_str=}")
+
+    SCOPES = ['https://www.googleapis.com/auth/calendar']
+    SERVICE_ACCOUNT_FILE = 'app/secrets/calendar.json'
+
+    try:
+        credentials = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES
+        )
+        service = build('calendar', 'v3', credentials=credentials)
+
+        calendar_id = 'paguta306@gmail.com'
+
+        # Парсинг дати та часового поясу
+        parsed_dt = datetime.strptime(datetime_str, "%d.%m.%Y %H:%M")
+        tz = pytz.timezone("Europe/Kyiv")
+        start_dt = tz.localize(parsed_dt)
+        end_dt = start_dt + timedelta(minutes=30)
+
+        start = start_dt.isoformat()
+        end = end_dt.isoformat()
+
+        # Перевірка чи вже є подія на цей час
+        existing = service.events().list(
+            calendarId=calendar_id,
+            timeMin=start,
+            timeMax=end,
+            singleEvents=True,
+            orderBy="startTime"
+        ).execute()
+
+        if existing.get("items"):
+            print("❌ Час уже зайнятий. Подія не буде створена.")
+            return False
+
+        # Створення події
+        event = {
+            'summary': f"Дзвінок з {name}",
+            'description': f"{description}\nEmail: {email}",
+            'start': {'dateTime': start, 'timeZone': 'Europe/Kyiv'},
+            'end': {'dateTime': end, 'timeZone': 'Europe/Kyiv'},
+        }
+
+        created_event = service.events().insert(calendarId=calendar_id, body=event).execute()
+        print("✅ Подія створена:", created_event.get("htmlLink"))
+        return True
+
+    except Exception as e:
+        print("❌ Calendar API error:", e)
+        return False
+
+
 @bp.route('/')
 def home():
     lang = session.get('lang', 'uk')
     t = load_translations(lang)
     return render_template('index.html', t=t)
 
-# === Форма заявки ===
 @bp.route('/request', methods=['GET', 'POST'])
 def request_form():
     lang = session.get('lang', 'uk')
@@ -45,11 +99,18 @@ def request_form():
         email = request.form['email']
         product_type = request.form.get('product_type')
         description = request.form['description']
+        contact_time = request.form.get('contact_time')
 
-        # === Новий динамічний підрахунок ціни ===
+        # Обрати годину на основі вибору
+        hour_map = {'morning': 10, 'day': 13, 'evening': 17}
+        hour = hour_map.get(contact_time, 10)
+
+        # Скласти повну дату і час
+        meeting_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
+        full_datetime_str = f"{meeting_date} {hour:02d}:00"
+
+        # Динамічний розрахунок вартості
         base_cost = 0
-        base_days = 1
-
         if product_type == 'website':
             base_cost += 200
             site_type = request.form.get('site_type')
@@ -58,10 +119,8 @@ def request_form():
                 base_cost += 150
             elif site_type == 'corporate':
                 base_cost += 100
-
             if pages == '3+':
                 base_cost += 100
-
             if request.form.get('admin_panel') == '1':
                 base_cost += 120
             if request.form.get('auth') == '1':
@@ -74,7 +133,6 @@ def request_form():
                 base_cost += 200
             elif platform in ['android', 'ios']:
                 base_cost += 100
-
             if request.form.get('login') == '1':
                 base_cost += 100
             if request.form.get('user_profile') == '1':
@@ -85,13 +143,11 @@ def request_form():
             bot_commands = request.form.get('bot_commands')
             if bot_commands == 'many':
                 base_cost += 100
-
             if request.form.get('bot_database') == '1':
                 base_cost += 120
             if request.form.get('bot_payments') == '1':
                 base_cost += 150
 
-        # === Визначаємо складність за ціною ===
         if base_cost < 300:
             complexity = 'low'
             estimated_time = rt.get('days_1_2', '1-2 days')
@@ -103,26 +159,28 @@ def request_form():
             estimated_time = rt.get('days_7_plus', '7+ days')
 
         estimated_cost = base_cost
-
-        meeting_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
-
-        uploaded_file = request.files.get('file_upload')
         file_path = None
 
+        uploaded_file = request.files.get('file_upload')
         if uploaded_file and uploaded_file.filename and allowed_file(uploaded_file.filename):
             ext = uploaded_file.filename.rsplit('.', 1)[1].lower()
-            unique_name = f"{uuid.uuid4().hex}.{ext}"  # Генеруємо унікальне ім’я
+            unique_name = f"{uuid.uuid4().hex}.{ext}"
             uploads_dir = os.path.join(os.getcwd(), 'static', 'uploads')
             os.makedirs(uploads_dir, exist_ok=True)
             saved_path = os.path.join(uploads_dir, unique_name)
-
             try:
                 uploaded_file.save(saved_path)
                 file_path = unique_name
             except Exception as e:
                 print("❌ File save error:", e)
-                file_path = None
 
+        # Додаємо подію в календар, якщо час вільний
+        event_created = add_event_to_calendar(name, email, description, full_datetime_str)
+        if not event_created:
+            error = rt.get('time_taken_error', "The selected time is already taken. Please choose another slot.")
+            return render_template('request.html', user_name=user_name, user_email=user_email, t=t, error=error)
+
+        # Записуємо в базу
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         cursor.execute('''
@@ -132,6 +190,7 @@ def request_form():
         conn.commit()
         conn.close()
 
+        # Надсилання email
         try:
             msg = Message(
                 rt.get("email_subject", "Confirmation of request"),
@@ -142,7 +201,7 @@ def request_form():
 {rt.get("email_greeting", "Thank you")}, {name}!
 
 {rt.get("email_confirmed", "Your request has been received successfully.")} 
-{rt.get("email_call_expected", "Expect a call from our representative on")} {meeting_date}.
+{rt.get("email_call_expected", "Expect a call from our representative on")} {meeting_date} о {hour}:00.
 
 🛠️ {rt.get("email_complexity", "Complexity")}: {complexity}
 ⏱️ {rt.get("email_time", "Estimated duration")}: {estimated_time}
@@ -159,19 +218,18 @@ def request_form():
             name=name,
             estimated_time=estimated_time,
             estimated_cost=estimated_cost,
-            meeting_date=meeting_date,
+            meeting_date=f"{meeting_date} о {hour}:00",
             complexity=complexity,
             t=t
         )
 
     return render_template('request.html', user_name=user_name, user_email=user_email, t=t)
 
-# === Скачування файлів ===
+
 @bp.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory(os.path.join('static', 'uploads'), filename, as_attachment=True)
 
-# === Зміна мови ===
 @bp.route('/switch-language', methods=['POST'])
 def switch_language():
     lang = request.form.get('lang')

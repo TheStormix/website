@@ -29,6 +29,11 @@
 
 <div id="request-form" class="form-container">
   <p><a href="{{ url_for('main.home') }}" class="back-btn">{{ t['request']['back'] }}</a></p>
+  {% if error %}
+    <div class="flash-message error">
+        {{ error }}
+    </div>
+  {% endif %}
 
   <div id="user_choice" class="login-choice" {% if session.get('user_id') %}style="display:none"{% endif %}>
     <h2>{{ t['request']['choose_mode'] }}</h2>
@@ -128,6 +133,9 @@
           <option value="day">{{ t['request']['time_day'] }}</option>
           <option value="evening">{{ t['request']['time_evening'] }}</option>
         </select>
+
+        <label>{{ t['request']['calendar_time'] }}</label>
+        <input type="datetime-local" name="meeting_datetime" required>
 
         <input type="hidden" name="complexity" id="complexity" value="low">
       </div>
