@@ -172,14 +172,15 @@
 </script>
 <script>
     async function loadAvailableSlots() {
+        const t = window.translations?.request || {};
         const period = document.getElementById("contact_time").value;
         const dateInput = document.getElementById("contact_date").value;
         const select = document.getElementById("meeting_datetime");
       
-        select.innerHTML = '<option>Завантаження...</option>';
+        select.innerHTML = `<option>${t.loading || "Завантаження..."}</option>`;
       
         if (!period || !dateInput) {
-          select.innerHTML = '<option>Спочатку виберіть дату та період</option>';
+          select.innerHTML = `<option>${t.select_date_time_first || "Спочатку виберіть дату та період"}</option>`;
           return;
         }
       
@@ -192,28 +193,28 @@
           select.innerHTML = '';
       
           if (!data.slots || data.slots.length === 0) {
-            select.innerHTML = '<option disabled>Немає доступних слотів</option>';
+            select.innerHTML = `<option disabled>${t.no_available_slots || "Немає доступних слотів"}</option>`;
           } else {
             const defaultOption = document.createElement('option');
             defaultOption.disabled = true;
             defaultOption.selected = true;
-            defaultOption.textContent = "Виберіть час дзвінка";
+            defaultOption.textContent = t.select_slot || "Виберіть час дзвінка";
             select.appendChild(defaultOption);
       
             for (const slot of data.slots) {
               const opt = document.createElement('option');
-              opt.value = slot.value;              // формат: 06.05.2025 09:00
-              opt.textContent = slot.label;        // форматований: 09:00
+              opt.value = slot.value;
+              opt.textContent = slot.label;
               if (!slot.available) {
                 opt.disabled = true;
-                opt.textContent += ' (зайнятий)';
+                opt.textContent += ` (${t.busy || "зайнятий"})`;
               }
               select.appendChild(opt);
             }
           }
         } catch (e) {
           console.error("❌ Failed to fetch slots:", e);
-          select.innerHTML = '<option disabled>Помилка завантаження</option>';
+          select.innerHTML = `<option disabled>${t.load_error || "Помилка завантаження"}</option>`;
         }
       }
   </script>
