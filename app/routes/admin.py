@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 import sqlite3
 from app.utils.i18n import load_translations
+from datetime import datetime
+import pytz
+import os
 
 bp = Blueprint('admin', __name__)
 
@@ -15,9 +18,16 @@ def admin_login():
     t = load_translations(lang)
 
     if request.method == 'POST':
-        if request.form.get('username') == 'admin' and request.form.get('password') == 'admin123':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        env_username = os.environ.get('ADMIN_USERNAME')
+        env_password = os.environ.get('ADMIN_PASSWORD')
+
+        if username == env_username and password == env_password:
             session['admin'] = True
             return redirect(url_for('admin.admin_panel'))
+
         flash(t['admin'].get('invalid_login', 'Неправильний логін або пароль.'), 'error')
         return redirect(url_for('admin.admin_login'))
 
@@ -33,11 +43,34 @@ def admin_panel():
 
     conn = get_db_connection()
 
+    # Отримуємо всі заявки
     reqs = conn.execute('''
         SELECT id, name, email, description,
-           complexity, estimated_time, estimated_cost, meeting_date,
-           status, COALESCE(rating,0) AS rating,
-           file_path
+               complexity, estimated_time, estimated_cost, meeting_date,
+               status, COALESCE(rating, 0) AS rating,
+               file_path
+        FROM requests
+        ORDER BY id DESC
+    ''').fetchall()
+
+    # === Автоматичне оновлення статусу ===
+    now = datetime.now()
+    for req in reqs:
+        try:
+            meeting_dt = datetime.strptime(req['meeting_date'], "%d.%m.%Y %H:%M")
+        except ValueError:
+            continue  # пропускаємо заявки без часу
+
+        if req['status'] == 'в очікуванні дзвінка' and meeting_dt < now:
+            conn.execute('UPDATE requests SET status = ? WHERE id = ?', ('в роботі', req['id']))
+    conn.commit()
+
+    # Повторно отримуємо вже оновлені заявки
+    reqs = conn.execute('''
+        SELECT id, name, email, description,
+               complexity, estimated_time, estimated_cost, meeting_date,
+               status, COALESCE(rating, 0) AS rating,
+               file_path
         FROM requests
         ORDER BY id DESC
     ''').fetchall()

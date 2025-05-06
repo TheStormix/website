@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, send_from_directory, url_for
+from flask import Blueprint, render_template, request, redirect, session, send_from_directory, url_for, jsonify
 from datetime import datetime, timedelta
 import sqlite3
 from flask_mail import Message
@@ -19,7 +19,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def add_event_to_calendar(name, email, description, datetime_str):
-    print(f"📅 add_event_to_calendar called with: {name=}, {email=}, {datetime_str=}")
+    print(f"🗅️ add_event_to_calendar called with: {name=}, {email=}, {datetime_str=}")
 
     SCOPES = ['https://www.googleapis.com/auth/calendar']
     SERVICE_ACCOUNT_FILE = 'app/secrets/calendar.json'
@@ -29,10 +29,8 @@ def add_event_to_calendar(name, email, description, datetime_str):
             SERVICE_ACCOUNT_FILE, scopes=SCOPES
         )
         service = build('calendar', 'v3', credentials=credentials)
-
         calendar_id = 'paguta306@gmail.com'
 
-        # Парсинг дати та часового поясу
         parsed_dt = datetime.strptime(datetime_str, "%d.%m.%Y %H:%M")
         tz = pytz.timezone("Europe/Kyiv")
         start_dt = tz.localize(parsed_dt)
@@ -41,7 +39,6 @@ def add_event_to_calendar(name, email, description, datetime_str):
         start = start_dt.isoformat()
         end = end_dt.isoformat()
 
-        # Перевірка чи вже є подія на цей час
         existing = service.events().list(
             calendarId=calendar_id,
             timeMin=start,
@@ -54,7 +51,6 @@ def add_event_to_calendar(name, email, description, datetime_str):
             print("❌ Час уже зайнятий. Подія не буде створена.")
             return False
 
-        # Створення події
         event = {
             'summary': f"Дзвінок з {name}",
             'description': f"{description}\nEmail: {email}",
@@ -70,6 +66,65 @@ def add_event_to_calendar(name, email, description, datetime_str):
         print("❌ Calendar API error:", e)
         return False
 
+
+@bp.route('/available-slots')
+def available_slots():
+    period = request.args.get('period')
+    date_str = request.args.get('date')
+    if not period or not date_str:
+        return jsonify({'slots': []}), 400
+
+    if period not in ['morning', 'day', 'evening']:
+        return jsonify({'slots': []}), 200
+
+    try:
+        date = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        return jsonify({'slots': []}), 400
+
+    SCOPES = ['https://www.googleapis.com/auth/calendar']
+    SERVICE_ACCOUNT_FILE = 'app/secrets/calendar.json'
+
+    try:
+        credentials = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES
+        )
+        service = build('calendar', 'v3', credentials=credentials)
+        calendar_id = 'paguta306@gmail.com'
+
+        if period == 'morning':
+            hours = [9, 10, 11]
+        elif period == 'day':
+            hours = [12, 13, 14]
+        else:
+            hours = [15, 16, 17]
+
+        tz = pytz.timezone('Europe/Kyiv')
+        slots = []
+        for hour in hours:
+            start_dt = tz.localize(date.replace(hour=hour, minute=0, second=0, microsecond=0))
+            end_dt = start_dt + timedelta(minutes=30)
+
+            events = service.events().list(
+                calendarId=calendar_id,
+                timeMin=start_dt.isoformat(),
+                timeMax=end_dt.isoformat(),
+                singleEvents=True,
+                orderBy="startTime"
+            ).execute()
+
+            slot_str = start_dt.strftime("%d.%m.%Y %H:%M")
+            slots.append({
+                'value': slot_str,
+                'label': start_dt.strftime("%H:%M"),
+                'available': not events.get('items')
+            })
+
+        return jsonify({'slots': slots}), 200
+
+    except Exception as e:
+        print("❌ Error fetching slots:", e)
+        return jsonify({'slots': []}), 500
 
 @bp.route('/')
 def home():
@@ -99,17 +154,11 @@ def request_form():
         email = request.form['email']
         product_type = request.form.get('product_type')
         description = request.form['description']
-        contact_time = request.form.get('contact_time')
+        full_datetime_str = request.form.get('meeting_datetime')
 
-        # Обрати годину на основі вибору
-        hour_map = {'morning': 10, 'day': 13, 'evening': 17}
-        hour = hour_map.get(contact_time, 10)
+        parsed_dt = datetime.strptime(full_datetime_str, "%d.%m.%Y %H:%M")
+        meeting_date = parsed_dt.strftime("%d.%m.%Y %H:%M")
 
-        # Скласти повну дату і час
-        meeting_date = (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y")
-        full_datetime_str = f"{meeting_date} {hour:02d}:00"
-
-        # Динамічний розрахунок вартості
         base_cost = 0
         if product_type == 'website':
             base_cost += 200
@@ -174,13 +223,11 @@ def request_form():
             except Exception as e:
                 print("❌ File save error:", e)
 
-        # Додаємо подію в календар, якщо час вільний
         event_created = add_event_to_calendar(name, email, description, full_datetime_str)
         if not event_created:
             error = rt.get('time_taken_error', "The selected time is already taken. Please choose another slot.")
             return render_template('request.html', user_name=user_name, user_email=user_email, t=t, error=error)
 
-        # Записуємо в базу
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         cursor.execute('''
@@ -190,7 +237,6 @@ def request_form():
         conn.commit()
         conn.close()
 
-        # Надсилання email
         try:
             msg = Message(
                 rt.get("email_subject", "Confirmation of request"),
@@ -201,7 +247,7 @@ def request_form():
 {rt.get("email_greeting", "Thank you")}, {name}!
 
 {rt.get("email_confirmed", "Your request has been received successfully.")} 
-{rt.get("email_call_expected", "Expect a call from our representative on")} {meeting_date} о {hour}:00.
+{rt.get("email_call_expected", "Expect a call from our representative on")} {full_datetime_str}.
 
 🛠️ {rt.get("email_complexity", "Complexity")}: {complexity}
 ⏱️ {rt.get("email_time", "Estimated duration")}: {estimated_time}
@@ -218,13 +264,12 @@ def request_form():
             name=name,
             estimated_time=estimated_time,
             estimated_cost=estimated_cost,
-            meeting_date=f"{meeting_date} о {hour}:00",
+            meeting_date=full_datetime_str,
             complexity=complexity,
             t=t
         )
 
     return render_template('request.html', user_name=user_name, user_email=user_email, t=t)
-
 
 @bp.route('/uploads/<path:filename>')
 def uploaded_file(filename):

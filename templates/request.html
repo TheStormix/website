@@ -126,8 +126,11 @@
         <label>{{ t['request']['file_upload'] }}:</label>
         <input type="file" id="file_upload" name="file_upload" accept=".pdf,.doc,.docx,.txt">
 
+        <label>{{ t['request']['contact_date'] or 'Оберіть дату дзвінка' }}</label>
+        <input type="date" name="contact_date" id="contact_date" required onchange="loadAvailableSlots()">
+
         <label>{{ t['request']['contact_time'] }}</label>
-        <select name="contact_time">
+        <select name="contact_time" id="contact_time" required onchange="loadAvailableSlots()">
           <option value="">{{ t['request']['contact_time_placeholder'] }}</option>
           <option value="morning">{{ t['request']['time_morning'] }}</option>
           <option value="day">{{ t['request']['time_day'] }}</option>
@@ -135,7 +138,9 @@
         </select>
 
         <label>{{ t['request']['calendar_time'] }}</label>
-        <input type="datetime-local" name="meeting_datetime" required>
+        <select name="meeting_datetime" id="meeting_datetime" required>
+          <option value="">{{ t['request']['select_slot'] or 'Виберіть час дзвінка' }}</option>
+        </select>
 
         <input type="hidden" name="complexity" id="complexity" value="low">
       </div>
@@ -165,6 +170,53 @@
 <script>
   window.translations = {{ t['request'] | tojson }};
 </script>
+<script>
+    async function loadAvailableSlots() {
+        const period = document.getElementById("contact_time").value;
+        const dateInput = document.getElementById("contact_date").value;
+        const select = document.getElementById("meeting_datetime");
+      
+        select.innerHTML = '<option>Завантаження...</option>';
+      
+        if (!period || !dateInput) {
+          select.innerHTML = '<option>Спочатку виберіть дату та період</option>';
+          return;
+        }
+      
+        const isoDate = new Date(dateInput).toISOString().slice(0, 10);
+      
+        try {
+          const res = await fetch(`/available-slots?period=${period}&date=${isoDate}`);
+          const data = await res.json();
+      
+          select.innerHTML = '';
+      
+          if (!data.slots || data.slots.length === 0) {
+            select.innerHTML = '<option disabled>Немає доступних слотів</option>';
+          } else {
+            const defaultOption = document.createElement('option');
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = "Виберіть час дзвінка";
+            select.appendChild(defaultOption);
+      
+            for (const slot of data.slots) {
+              const opt = document.createElement('option');
+              opt.value = slot.value;              // формат: 06.05.2025 09:00
+              opt.textContent = slot.label;        // форматований: 09:00
+              if (!slot.available) {
+                opt.disabled = true;
+                opt.textContent += ' (зайнятий)';
+              }
+              select.appendChild(opt);
+            }
+          }
+        } catch (e) {
+          console.error("❌ Failed to fetch slots:", e);
+          select.innerHTML = '<option disabled>Помилка завантаження</option>';
+        }
+      }
+  </script>
 <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
